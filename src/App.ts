@@ -1,5 +1,5 @@
 import { Config } from './';
-import { IContainer, IApp } from '@framework/types';
+import { IContainer, IApp } from './types';
 import { Service } from './Service';
 import rootContainer from './container';
 
@@ -9,9 +9,9 @@ import rootContainer from './container';
  * and performs any other initial setup.
  */
 export abstract class App extends Service implements IApp {
-    constructor(
-        protected container: IContainer = rootContainer
-    ) {
+    protected container: IContainer = rootContainer;
+
+    constructor() {
         super();
         this.register = this.register.bind(this);
 

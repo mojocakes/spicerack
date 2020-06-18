@@ -39,7 +39,8 @@
         "target": "es5",
         "types": [
             "reflect-metadata",
-            "jest"
+            "jest",
+            "node"
         ]
     },
     "exclude": [

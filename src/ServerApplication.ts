@@ -8,7 +8,7 @@ export class ServerApplication extends App {
         this.container.bind('view').to(ReactView).inSingletonScope();
     }
 
-    protected async boot(): Promise<void> {
+    public async boot(): Promise<void> {
         await this.ready;
 
         // Resolving services from the container initialises them.

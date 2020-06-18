@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import * as c from './container';
 export const container = c;
 export { App } from './App';
+export { boot } from './boot';
 export { Config } from './Config';
 export { Router } from './Router';
 export { Service } from './Service';

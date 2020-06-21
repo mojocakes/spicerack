@@ -11,3 +11,4 @@ export { ExpressServer } from './ExpressServer';
 export { ServerApplication } from './ServerApplication';
 export { RouteController } from './RouteController';
 export { ReactView } from './view/ReactView';
+export { Model, modelFactory } from './Model';

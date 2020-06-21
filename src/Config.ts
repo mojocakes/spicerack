@@ -1,5 +1,5 @@
 require('dotenv').config();
-import { iConfigClass } from '@framework/types/config';
+import { iConfigClass } from './types/config';
 import { injectable } from './container';
 
 @injectable()

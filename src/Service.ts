@@ -2,7 +2,7 @@ import { injectable } from './container';
 
 @injectable()
 export abstract class Service {
-    protected ready: Promise<void>;
+    public ready: Promise<void>;
 
     constructor() {
         this.boot = this.boot.bind(this);
@@ -10,5 +10,5 @@ export abstract class Service {
         this.ready = this.boot();
     }
 
-    protected async boot(): Promise<void> {};
+    public async boot(): Promise<void> {};
 }

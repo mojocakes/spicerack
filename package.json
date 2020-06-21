@@ -1,0 +1,30 @@
+{
+    "name": "spicerack",
+    "version": "0.0.0",
+    "description": "A lightweight framework for frontend & backend applications written in Typescript.",
+    "main": "src/index.ts",
+    "repository": "git@github.com:mojocakes/spicerack.git",
+    "author": "James Cook <jamespetercook@googlemail.com>",
+    "license": "MIT",
+    "scripts": {
+        "test": "./node_modules/.bin/jest",
+        "test:watch": "./node_modules/.bin/jest --watch"
+    },
+    "dependencies": {
+        "inversify": "^5.0.1",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1"
+    },
+    "devDependencies": {
+        "@types/enzyme": "^3.10.5",
+        "@types/enzyme-adapter-react-16": "^1.0.6",
+        "@types/jest": "^25.2.3",
+        "babel-jest": "^26.0.1",
+        "enzyme": "^3.11.0",
+        "enzyme-adapter-react-16": "^1.15.2",
+        "jest": "24.0.0",
+        "reflect-metadata": "^0.1.13",
+        "ts-jest": "^23.10.5",
+        "typescript": "^3.9.5"
+    }
+}

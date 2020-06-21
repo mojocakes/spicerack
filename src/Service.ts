@@ -2,7 +2,7 @@ import { injectable } from './container';
 
 @injectable()
 export abstract class Service {
-    public readonly ready: Promise<void>;
+    public ready: Promise<void>;
 
     constructor() {
         this.boot = this.boot.bind(this);

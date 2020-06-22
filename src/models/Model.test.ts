@@ -64,4 +64,12 @@ describe('Model', () => {
             expect(model.color).toBe('purple');
         });
     });
+
+    describe('serialize()', () => {
+        it('Returns an object of data', () => {
+            const model = new Car(camper);
+            const data = model.serialize();
+            expect(data).toEqual(camper);
+        });
+    });
 });

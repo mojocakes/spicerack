@@ -36,6 +36,15 @@ export abstract class Model<T extends Record<string, any>> implements IModel<T> 
     }
 
     /**
+     * Gets the model data as an object.
+     * 
+     * @returns {T}
+     */
+    public serialize(): T {
+        return this.data;
+    }
+
+    /**
      * Makes a proxy handler for this class.
      * This allows us to override the default behaviour whenever
      * a property on this class is accessed or updated.

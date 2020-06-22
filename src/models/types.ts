@@ -12,4 +12,17 @@ export interface IModel<T> {
      * Saves any changes to this model.
      */
     save(): Promise<void>;
+
+    /**
+     * Gets the model data as an object.
+     * 
+     * @returns {T}
+     */
+    serialize(): T;
+}
+
+export interface IModelCollection<T extends IModel<any>> {
+    each(callback: (model: T) => any): void;
+
+    filter(criteria: object): IModelCollection<T>;
 }

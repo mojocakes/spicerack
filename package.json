@@ -7,6 +7,7 @@
     "author": "James Cook <jamespetercook@googlemail.com>",
     "license": "MIT",
     "scripts": {
+        "packages:link": "node_modules/.bin/lerna bootstrap",
         "test": "./node_modules/.bin/jest",
         "test:watch": "./node_modules/.bin/jest --watch"
     },
@@ -29,6 +30,7 @@
         "enzyme": "^3.11.0",
         "enzyme-adapter-react-16": "^1.15.2",
         "jest": "^26.1.0",
+        "lerna": "^3.22.1",
         "reflect-metadata": "^0.1.13",
         "ts-jest": "^26.1.1",
         "typescript": "^3.9.5"

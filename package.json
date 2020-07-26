@@ -7,6 +7,7 @@
     "author": "James Cook <jamespetercook@googlemail.com>",
     "license": "MIT",
     "scripts": {
+        "packages:create": "node_modules/.bin/lerna create",
         "packages:link": "node_modules/.bin/lerna bootstrap",
         "test": "./node_modules/.bin/jest",
         "test:watch": "./node_modules/.bin/jest --watch"

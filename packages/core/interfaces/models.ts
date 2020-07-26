@@ -1,3 +1,5 @@
+import { IResource } from './resources';
+
 export interface IModel<T> {
     /**
      * Updates a single value.
@@ -12,4 +14,12 @@ export interface IModel<T> {
      * Saves any changes to this model.
      */
     save(): Promise<void>;
+}
+
+export interface IModelRepository<
+    T extends IModel<T>,
+    Q extends Object = {},
+    C extends Object = {}
+> extends IResource<T, Q, C> {
+    //
 }

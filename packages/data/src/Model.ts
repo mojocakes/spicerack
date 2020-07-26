@@ -1,4 +1,4 @@
-import { IModel } from './types';
+import { IModel } from '@spicerack/core/interfaces/models';
 
 export type IModelConstructor<D, M = IModel<any>> = {
     new(data: D): M;

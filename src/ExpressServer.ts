@@ -1,6 +1,6 @@
 import { IServer, IRouteControllerConstructor, IRequest, IResponse, IRouteController } from "./types";
 import express, { Application } from "express";
-import { inject, injectable } from './container';
+import { inject, injectable } from '../packages/core/container';
 import { Config } from "./Config";
 
 @injectable()

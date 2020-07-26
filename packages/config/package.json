@@ -1,15 +1,19 @@
 {
-  "name": "@spicerack/core",
+  "name": "@spicerack/config",
   "version": "0.0.1",
-  "description": "Required utilities for Spicerack",
+  "description": "Config provider for Spicerack",
   "keywords": [
     "spicerack",
-    "core"
+    "config"
   ],
   "author": "James Cook <jamespetercook@googlemail.com>",
   "homepage": "https://github.com/mojocakes/spicerack#readme",
   "license": "ISC",
   "main": "index.ts",
+  "dependencies": {
+    "@spicerack/core": "*",
+    "dotenv": "^8.2.0"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"

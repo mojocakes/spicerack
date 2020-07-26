@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-import { injectable } from '../container';
+import { injectable } from '../../packages/core/container';
 import { View } from "./View";
 
 @injectable()

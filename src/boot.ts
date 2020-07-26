@@ -1,5 +1,5 @@
 import { IApp } from './types';
-import container from './container';
+import container from '../packages/core/container';
 import { TaskManager } from './TaskManager';
 
 interface IAppConstructor {

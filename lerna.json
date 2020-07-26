@@ -1,0 +1,22 @@
+{
+    "packages": [
+        "packages/*"
+    ],
+    "npmClient": "npm",
+    "version": "independent",
+    "command": {
+        "publish": {
+            "ignoreChanges": [],
+            "message": "chore(release): publish"
+        },
+        "bootstrap": {
+            "ignore": "component-*",
+            "npmClientArgs": ["--no-package-lock"]
+        }
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org",
+        "access": "public"
+    }
+}
+  

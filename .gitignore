@@ -1,5 +1,7 @@
 # generated files
 node_modules
+.watchman*
+lerna-debug.log
 
 # secrets
 .env

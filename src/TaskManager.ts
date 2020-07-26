@@ -6,7 +6,7 @@ import {
     ITask,
     ITaskManager,
 } from "./types/tasks";
-import { Service } from "./Service";
+import { Service } from "../packages/core/Service";
 import { container } from "./";
 
 @container.injectable()

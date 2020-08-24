@@ -1,5 +1,7 @@
+import { TConfig } from '../types/config';
+
 export interface IConfigService<
-    T extends Record<string, any>
+    T extends Record<string, any> = TConfig
 > {
     /**
      * Retrieves a single item from the config store.

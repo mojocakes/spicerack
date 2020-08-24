@@ -1,7 +1,6 @@
 import { IApp } from './interfaces/application';
 import { IDependencyContainer } from './interfaces/container';
-import { Service } from './Service';
-import rootContainer from './container';
+import { Service } from './services';
 
 /**
  * The App class is typically the root of a project,
@@ -11,22 +10,13 @@ import rootContainer from './container';
  * and performs any other initial setup.
  */
 export abstract class App extends Service implements IApp {
-    protected container: IDependencyContainer = rootContainer;
-
-    constructor() {
-        super();
-        this.registerDependencies = this.registerDependencies.bind(this);
-
-        this.ready = this.registerDependencies(this.container).then(this.boot);
-    }
-
     /**
      * Registers any required services with the dependency container.
      * 
      * @param {IDependencyContainer} container
      * @returns {void}
      */
-    protected async registerDependencies(container: IDependencyContainer): Promise<void> {
+    public static async registerDependencies(container: IDependencyContainer): Promise<void> {
         //
     }
 }

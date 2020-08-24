@@ -1,15 +1,18 @@
 {
-  "name": "@spicerack/core",
+  "name": "@spicerack/tasks",
   "version": "0.0.1",
-  "description": "Required utilities for Spicerack",
+  "description": "Tasks functionality for Spicerack",
   "keywords": [
     "spicerack",
-    "core"
+    "tasks"
   ],
   "author": "James Cook <jamespetercook@googlemail.com>",
   "homepage": "https://github.com/mojocakes/spicerack#readme",
   "license": "ISC",
   "main": "index.ts",
+  "dependencies": {
+      "@spicerack/core": "*"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -26,8 +29,5 @@
   },
   "bugs": {
     "url": "https://github.com/mojocakes/spicerack/issues"
-  },
-  "dependencies": {
-    "reflect-metadata": "^0.1.13"
   }
 }

@@ -1,28 +1,14 @@
 import { IService } from "./generic";
 
-export interface ITaskManager {
-    /**
-     * Gets a scheduled task.
-     * 
-     * @param {string} taskName
-     * @returns {null | IScheduledTask}
-     */
-    get(taskName: string): null | IScheduledTask;
-
-    /**
-     * Schedules a task to be run.
-     * 
-     * @param {IScheduledTaskConstructor} task
-     * @returns {void}
-     */
-    schedule(task: IScheduledTaskConstructor): IScheduledTask;
-}
-
-export interface IScheduledTaskConstructor {
-    new (...args: any[]): ITask;
-}
-
 export interface ITask extends IService {
+    /**
+     * Unique ID for this task.
+     * This is used to stop duplicate tasks of the same type from being scheduled.
+     * 
+     * @var {string}
+     */
+    readonly uid: string;
+
     /**
      * Runs the task.
      * 
@@ -32,7 +18,7 @@ export interface ITask extends IService {
     run(...args: any[]): Promise<any>;
 }
 
-export type ICommonIntervalGrammar =
+export type IIntervalGrammar =
     | 'millisecond'
     | 'milliseconds'
     | 'second'
@@ -86,10 +72,10 @@ export interface IScheduledTask {
     /**
      * Sets how often this task should run.
      * 
-     * @param {ICommonIntervalGrammar} interval 
+     * @param {IIntervalGrammar} interval 
      * @param {number?} frequency 
      */
-    every(interval: ICommonIntervalGrammar, frequency?: number): IScheduledTask;
+    every(interval: IIntervalGrammar, frequency?: number): IScheduledTask;
 
     /**
      * Schedules this task using a custom CRON string.
@@ -98,4 +84,22 @@ export interface IScheduledTask {
      * @returns {IScheduledTask}
      */
     setCron(cron: string): IScheduledTask;
+}
+
+export interface ITaskManager {
+    /**
+     * Gets a scheduled task.
+     * 
+     * @param {string} taskName
+     * @returns {null | IScheduledTask}
+     */
+    get(taskName: string): null | IScheduledTask;
+
+    /**
+     * Schedules a task to be run.
+     * 
+     * @param {ITask} task
+     * @returns {void}
+     */
+    schedule(task: ITask): IScheduledTask;
 }

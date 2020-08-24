@@ -1,6 +1,6 @@
 import { IResource } from './resources';
 
-export interface IModel<T> {
+export interface IModel<T extends Object> {
     /**
      * Updates a single value.
      * 
@@ -30,9 +30,18 @@ export interface IModelCollection<T extends IModel<any>> {
 }
 
 export interface IModelRepository<
-    T extends IModel<T>,
-    Q extends Object = {},
-    C extends Object = {}
+    /**
+     * The model type
+     */
+    T extends IModel<any>,
+    /**
+     * Available query parameters
+     */
+    Q extends Record<string, any>,
+    /**
+     * Available config parameters
+     */
+    C extends Record<string, any>,
 > extends IResource<T, Q, C> {
     //
 }

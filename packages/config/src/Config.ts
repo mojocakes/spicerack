@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-import { Service } from '@spicerack/core/Service';
-import { injectable } from '@spicerack/core/container';
-import { IConfigService } from '@spicerack/core/interfaces/config';
-import { TConfig } from '@spicerack/core/types/config';
+import { Service } from '@spicerack/core/src/services';
+import { injectable } from '@spicerack/core';
+import { IConfigService } from '@spicerack/core/src/interfaces/config';
+import { TConfig } from '@spicerack/core/src/types/config';
 
 @injectable()
 export class Config<T = TConfig> extends Service implements IConfigService<T> {

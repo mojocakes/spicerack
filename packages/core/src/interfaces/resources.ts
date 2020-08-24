@@ -1,35 +1,36 @@
 import { IModel } from './models';
+import { TModelIdentifier } from '../types/models';
 
 export interface IResource<
     /**
      * The model type
      */
-    T extends IModel<T>,
+    T extends IModel<any>,
     /**
      * Available query parameters
      */
-    Q extends Object,
+    Q extends Record<string, any>,
     /**
      * Available config parameters
      */
-    C extends Object = {}
+    C extends Record<string, any>,
 > {
     /**
      * Deletes an entity.
      * 
-     * @param {number | string} id 
+     * @param {TModelIdentifier} id 
      * @returns {Promise<void>}
      */
-    delete(id: number | string): Promise<void>;
+    delete(id: TModelIdentifier): Promise<void>;
 
     /**
      * Fetches a single entity by its identitifer.
      * 
-     * @param {number | string} id 
+     * @param {TModelIdentifier} id 
      * @param {C=} config
-     * @returns {Promise<T>}
+     * @returns {Promise<null | T>}
      */
-    get(id: number | string, config?: C): Promise<T>;
+    get(id: TModelIdentifier, config?: C): Promise<null | T>;
 
     /**
      * Fetches multiple entities that match the given query.
@@ -49,15 +50,15 @@ export interface IResource<
 }
 
 export interface IStreamableResource<
-    T extends IModel<T>,
+    T extends IModel<any>,
     Q extends Object = {},
     C extends Object = {}
-> extends IResource<T, Q> {
+> extends IResource<T, Q, C> {
     /**
      * Streams all entities found for the given query.
      * 
-     * @param {Q} query 
-     * @param {Partial<IApiRequestConfig>=} config
+     * @param {Q=} query 
+     * @param {Partial<C>=} config
      * @returns {AsyncIterable<T>}
      * 
      * @example
@@ -65,5 +66,5 @@ export interface IStreamableResource<
      *     console.log(entity);
      * }
      */
-    stream(query?: Q, config?: C): AsyncIterable<T>;
+    stream(query?: Q, config?: Partial<C>,): AsyncIterable<T>;
 }

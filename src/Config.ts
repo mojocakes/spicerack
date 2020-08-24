@@ -1,6 +1,6 @@
 require('dotenv').config();
-import { iConfigClass } from '../packages/core/interfaces/config';
-import { injectable } from '../packages/core/container';
+import { iConfigClass } from '../packages/core/src/interfaces/config';
+import { injectable } from '../packages/core/src/container';
 
 @injectable()
 export class Config<iConfigShape extends Record<string, any>> implements iConfigClass<iConfigShape> {

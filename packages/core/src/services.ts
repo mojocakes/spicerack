@@ -7,7 +7,7 @@ export abstract class Service implements IService {
 
     constructor() {
         this.boot = this.boot.bind(this);
-        this.ready = this.boot();
+        // this.ready = this.boot();
     }
 
     /**

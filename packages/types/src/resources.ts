@@ -1,5 +1,4 @@
-import { IModel } from './models';
-import { TModelIdentifier } from '../types/models';
+import { IModel, TModelIdentifier } from './models';
 
 export interface IResource<
     /**

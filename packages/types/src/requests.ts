@@ -30,3 +30,33 @@ export type TRequestBuilderConfig<Q, RQ> = {
     query?: Partial<Q>,
     requestConfig?: Partial<RQ>,
 };
+
+export interface IRequest<
+    /**
+     * The config type.
+     */
+    C extends Object = TRequestConfig,
+> {
+    /**
+     * Makes a request.
+     * 
+     * @param {C} config 
+     * @returns {Promise<any>}
+     */
+    send(config: C): Promise<any>;
+}
+
+export interface IRestAPIRequest<
+    /**
+     * The config type.
+     */
+    C extends Object = TApiRequestConfig,
+> extends IRequest<C> {
+    /**
+     * Makes a request.
+     * 
+     * @param {C} config 
+     * @returns {Promise<T>}
+     */
+    send<T = any>(config: C): Promise<TApiResponse<T>>;
+}

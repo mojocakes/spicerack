@@ -1,4 +1,4 @@
-import { IApp } from './interfaces/application';
+import { IApp } from '../../types/src/application';
 import container from './container';
 import { IStaticallyRegistersDependencies } from './interfaces/generic';
 

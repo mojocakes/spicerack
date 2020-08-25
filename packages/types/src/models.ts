@@ -1,5 +1,16 @@
 import { IResource } from './resources';
 
+export type TDefaultModelProperties = {
+    id?: number | string;
+}
+
+export type TModelData<T> = TDefaultModelProperties & T;
+
+export type TModelIdentifier =
+    | string
+    | number
+;
+
 export interface IModel<T extends Object> {
     /**
      * Updates a single value.

@@ -1,4 +1,4 @@
-import { IDependencyContainer } from '../interfaces/container';
+import { IDependencyContainer } from './container';
 
 export interface IService {
     /**

@@ -1,5 +1,20 @@
 import { IService } from "./generic";
 
+export type TIntervalGrammar =
+    | 'millisecond'
+    | 'milliseconds'
+    | 'second'
+    | 'seconds'
+    | 'minute'
+    | 'minutes'
+    | 'hour'
+    | 'hours'
+    | 'day'
+    | 'days'
+    | 'month'
+    | 'months'
+;
+
 export interface ITask extends IService {
     /**
      * Unique ID for this task.
@@ -17,21 +32,6 @@ export interface ITask extends IService {
      */
     run(...args: any[]): Promise<any>;
 }
-
-export type IIntervalGrammar =
-    | 'millisecond'
-    | 'milliseconds'
-    | 'second'
-    | 'seconds'
-    | 'minute'
-    | 'minutes'
-    | 'hour'
-    | 'hours'
-    | 'day'
-    | 'days'
-    | 'month'
-    | 'months'
-;
 
 export interface IScheduledTask {
     /**
@@ -72,10 +72,10 @@ export interface IScheduledTask {
     /**
      * Sets how often this task should run.
      * 
-     * @param {IIntervalGrammar} interval 
+     * @param {TIntervalGrammar} interval 
      * @param {number?} frequency 
      */
-    every(interval: IIntervalGrammar, frequency?: number): IScheduledTask;
+    every(interval: TIntervalGrammar, frequency?: number): IScheduledTask;
 
     /**
      * Schedules this task using a custom CRON string.

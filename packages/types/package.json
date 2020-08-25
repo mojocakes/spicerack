@@ -1,10 +1,12 @@
 {
-  "name": "@spicerack/core",
+  "name": "@spicerack/types",
   "version": "0.0.1",
-  "description": "Required utilities for Spicerack",
+  "description": "Useful TypeScript types and interfaces for building web applications. These are utilised by the standard @spicerack packages.",
   "keywords": [
     "spicerack",
-    "core"
+    "typescript",
+    "types",
+    "interfaces"
   ],
   "author": "James Cook <jamespetercook@googlemail.com>",
   "homepage": "https://github.com/mojocakes/spicerack#readme",
@@ -26,9 +28,5 @@
   },
   "bugs": {
     "url": "https://github.com/mojocakes/spicerack/issues"
-  },
-  "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "@spicerack/types": "*"
   }
 }

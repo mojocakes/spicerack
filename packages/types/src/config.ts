@@ -1,4 +1,4 @@
-import { TConfig } from '../types/config';
+export type TConfig = {};
 
 export interface IConfigService<
     T extends Record<string, any> = TConfig

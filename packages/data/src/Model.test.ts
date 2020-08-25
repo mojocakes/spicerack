@@ -66,7 +66,7 @@ describe('Model', () => {
     });
 
     describe('serialize()', () => {
-        it('Returns an object of data', () => {
+        it('Returns the model data as an object', () => {
             const model = new Car(camper);
             const data = model.serialize();
             expect(data).toEqual(camper);

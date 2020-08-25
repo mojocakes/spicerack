@@ -1,4 +1,4 @@
-import { IApp } from './interfaces/application';
+import { IApp } from '../../types/src/application';
 import { IDependencyContainer } from './interfaces/container';
 import { Service } from './services';
 

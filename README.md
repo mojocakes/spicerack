@@ -9,15 +9,32 @@ Go to the [documentation.](docs/index.md)
 ## Quick start
 
 1. Create a new App class, injecting any services you need from the container.
-```typescript
-import { App, IConfig } from 'spicerack';
-import { inject } from 'spicerack/container';
+```ts
+import { App, inject } from '@spicerack/core';
+import { IDependencyContainer, IConfig } from '@spicerack/types';
+import { Config } from './services';
 
-class MyApp extends App {
-    constructor(@inject('config') protected config: IConfig) {
+export class MyApp extends App {
+    /**
+     * Registers any required services with the dependency container.
+     * 
+     * @param {IDependencyContainer} container
+     * @returns {Promise<void>}
+     */
+    public static async registerDependencies(container: IDependencyContainer): Promise<void> {
+        container.bind('services.config').to(Config).inSingletonScope();
+    }
+
+    constructor(@inject('services.config') protected config: IConfig) {
         //
     }
 
+    /**
+     * Runs automatically when the app is booted.
+     * "this.ready" promise will be resolved when this method resolves.
+     * 
+     * @returns {Promise<void>}
+     */
     async boot(): Promise<void> {
         const name = this.config.get('name');
         console.log(`My app "${name}" is running!`);
@@ -26,8 +43,9 @@ class MyApp extends App {
 ```
 
 2. Run the application.
-```typescript
-import { boot } from 'spicerack';
+```ts
+import { boot } from '@spicerack/core';
+import { MyApp } from './MyApp';
 
 boot(MyApp);
 ```

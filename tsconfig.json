@@ -27,7 +27,6 @@
             "@/*": ["./src/*"],
         },
         "rootDirs": [
-            "__tests__",
             "src",
             "stories"
         ],

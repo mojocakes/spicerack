@@ -1,4 +1,4 @@
-import { IResource } from './resources';
+import { IResource } from '../../__test__/models/resources';
 
 export interface IModel<T> {
     /**

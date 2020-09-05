@@ -1,5 +1,7 @@
-import { IService } from "./generic";
+import { Generic } from "./generic";
 
-export interface IApp extends IService {
-    //
+export namespace App {
+    export interface IApp extends Generic.IService {
+        //
+    }
 }

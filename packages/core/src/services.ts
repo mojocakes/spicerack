@@ -1,19 +1,12 @@
-import { injectable } from './container';
-import { IService } from './interfaces/generic';
+import * as Types from '@spicerack/types';
+import { injectable } from '@spicerack/inject';
 
 @injectable()
-export abstract class Service implements IService {
-    public ready: Promise<void>;
-
-    constructor() {
-        this.boot = this.boot.bind(this);
-        // this.ready = this.boot();
-    }
-
+export abstract class Service implements Types.Generic.IService {
     /**
-     * Runs any setup required before resolving this.ready.
+     * Resolves when this class is ready to be consumed.
      * 
-     * @returns {Promise<void>}
+     * @var {Promise<void>}
      */
-    protected async boot(): Promise<void> {};
+    public readonly ready: Promise<void> = Promise.resolve();
 }

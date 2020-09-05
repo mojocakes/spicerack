@@ -1,5 +1,5 @@
+import { ITask } from '@spicerack/types';
 import { Service } from '@spicerack/core';
-import { ITask } from '@spicerack/core/src/interfaces/tasks';
 
 export abstract class Task extends Service implements ITask {
     /**

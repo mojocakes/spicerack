@@ -1,8 +1,6 @@
 import 'reflect-metadata';
 
-import * as c from '../packages/core/src/container';
-export const container = c;
-export { App } from '../packages/core/src/app';
+export { App } from '../packages/core/src/App';
 export { boot } from '../packages/core/src/boot';
 export { Config } from './Config';
 export { Router } from './Router';

@@ -1,5 +1,4 @@
-import { IApp } from '../../types/src/application';
-import { IDependencyContainer } from './interfaces/container';
+import * as Types from '@spicerack/types';
 import { Service } from './services';
 
 /**
@@ -9,14 +8,14 @@ import { Service } from './services';
  * It registers dependencies with the container,
  * and performs any other initial setup.
  */
-export abstract class App extends Service implements IApp {
+export abstract class App extends Service implements Types.App.IApp {
     /**
      * Registers any required services with the dependency container.
      * 
-     * @param {IDependencyContainer} container
+     * @param {Types.Inject.IContainer} container
      * @returns {void}
      */
-    public static async registerDependencies(container: IDependencyContainer): Promise<void> {
+    public static async registerDependencies(container: Types.Inject.IContainer): Promise<void> {
         //
     }
 }

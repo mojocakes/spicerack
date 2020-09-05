@@ -33,7 +33,7 @@ const camper: IVehicle = {
     },
 };
 
-describe('Model', () => {
+describe('data/Model', () => {
     it('Stores data provided to constructor', () => {
         const model = new Car(camper) as any;
         expect(model.data).toEqual(camper);

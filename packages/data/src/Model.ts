@@ -1,13 +1,13 @@
-import { IModel } from '@spicerack/core/src/interfaces/models';
+import { Models } from '@spicerack/types';
 
-export type IModelConstructor<D, M = IModel<any>> = {
+export type IModelConstructor<D, M = Models.IModel<any>> = {
     new(data: D): M;
 }
 
 /**
  * A simple model that holds some data.
  */
-export abstract class Model<T extends Record<string, any>> implements IModel<T> {
+export abstract class Model<T extends Record<string, any>> implements Models.IModel<T> {
     protected _proxy: any;
 
     public fillable: string[] = [];
@@ -80,7 +80,7 @@ export abstract class Model<T extends Record<string, any>> implements IModel<T> 
  * @param {IModelConstructor<M, D>} ModelConstructor 
  * @returns {M & D}
  */
-export function modelFactory<D, M extends IModel<D> = IModel<D>>(
+export function modelFactory<D, M extends Models.IModel<D> = Models.IModel<D>>(
     data: D,
     ModelConstructor?: IModelConstructor<D, M>
 ): M & D {

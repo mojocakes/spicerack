@@ -11,7 +11,8 @@
   "license": "ISC",
   "main": "index.ts",
   "dependencies": {
-      "@spicerack/core": "*"
+      "@spicerack/core": "*",
+      "@spicerack/types": "*"
   },
   "directories": {
     "lib": "lib",

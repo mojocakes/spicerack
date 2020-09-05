@@ -1,22 +1,32 @@
 {
-  "name": "@spicerack/core",
+  "name": "@spicerack/inject",
   "version": "0.0.1",
-  "description": "Required utilities for Spicerack",
+  "description": "Dependency injection package for @spicerack",
   "keywords": [
-    "spicerack",
-    "core"
+    "dependency",
+    "injection",
+    "spicerack"
   ],
   "author": "James Cook <jamespetercook@googlemail.com>",
   "homepage": "https://github.com/mojocakes/spicerack#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.ts",
+  "dependencies": {
+    "@spicerack/types": "*",
+    "inversify": "^5.0.1"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "src"
   },
   "files": [
-    "lib"
+    "src"
   ],
+  "publishConfig": {
+    "registry": "https://registry.yarnpkg.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mojocakes/spicerack.git"
@@ -26,9 +36,5 @@
   },
   "bugs": {
     "url": "https://github.com/mojocakes/spicerack/issues"
-  },
-  "dependencies": {
-    "@spicerack/types": "*",
-    "@spicerack/inject": "*"
   }
 }

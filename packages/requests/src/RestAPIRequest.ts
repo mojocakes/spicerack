@@ -1,23 +1,28 @@
-import { decorate, injectable } from '@spicerack/core';
-import axios, { AxiosRequestConfig } from 'axios';
-import { IRestAPIRequest } from '@spicerack/core/src/interfaces/requests';
-import { TApiResponse } from '@spicerack/core/src/types/requests';
+import axiosLibrary, { AxiosInstance } from 'axios';
+import * as Types from '@spicerack/types';
 
 export class RestAPIRequest<
     /**
      * The config type.
      */
-    C = AxiosRequestConfig,
-> implements IRestAPIRequest<C> {
+    C extends Types.Requests.TApiRequestConfig = Types.Requests.TApiRequestConfig,
+> implements Types.Requests.IRestAPIRequest<C> {
+    constructor(protected axios: AxiosInstance = axiosLibrary) {
+        //
+    }
+
     /**
      * Makes a request.
      * 
      * @param {C} config 
-     * @returns {Promise<T>}
+     * @returns {Promise<TApiResult<T>>}
      */
-    public async send<T = any>(config: C): Promise<TApiResponse<T>> {
-        return axios(config);
+    public async send<T = any>(config: C): Promise<Types.Requests.TApiResult<T>> {
+        const response = await this.axios(config);
+
+        return {
+            requestConfig: config,
+            response,
+        };
     }
 }
-
-decorate(injectable(), RestAPIRequest);

@@ -12,6 +12,7 @@
   "main": "index.ts",
   "dependencies": {
     "@spicerack/core": "*",
+    "@spicerack/types": "*",
     "axios": "^0.19.2"
   },
   "directories": {

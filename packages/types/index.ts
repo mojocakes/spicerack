@@ -1,7 +1,6 @@
 export * from './src/root';
 export * from './src/application';
 export * from './src/config';
-export * from './src/container';
 export * from './src/generic';
 export * from './src/inject';
 export * from './src/models';

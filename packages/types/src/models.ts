@@ -1,7 +1,14 @@
-import { IResource } from './resources';
+import { Resources } from './resources';
 
 export namespace Models {
     export interface IModel<T extends Object> {
+        /**
+         * Model data.
+         * 
+         * @var {T}
+         */
+        readonly data: T;
+
         /**
          * Updates a single value.
          * 
@@ -23,6 +30,8 @@ export namespace Models {
          */
         serialize(): T;
     }
+
+    export type TModel<T> = IModel<T> & T;
     
     export interface IModelCollection<T extends IModel<any>> {
         each(callback: (model: T) => any): void;
@@ -43,7 +52,7 @@ export namespace Models {
          * Available config parameters
          */
         C extends Record<string, any>,
-    > extends IResource<T, Q, C> {
+    > extends Resources.IResource<T, Q, C> {
         //
     }
 

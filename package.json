@@ -10,7 +10,8 @@
         "packages:create": "node_modules/.bin/lerna create",
         "packages:link": "node_modules/.bin/lerna bootstrap",
         "test": "./node_modules/.bin/jest",
-        "test:watch": "./node_modules/.bin/jest --watch"
+        "test:watch": "./node_modules/.bin/jest --watch",
+        "test:watch:verbose": "./node_modules/.bin/jest --watch --verbose"
     },
     "dependencies": {
         "dotenv": "^8.2.0",

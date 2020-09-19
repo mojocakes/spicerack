@@ -2,12 +2,16 @@ import * as Types from '@spicerack/types';
 import { RestAPIRequest } from './RestAPIRequest';
 
 // -- mocks
+const MOCK_DATA = Symbol('MOCK_DATA');
 const mockAxios = jest.fn(async (): Promise<Types.Requests.TApiResponse<any>> => ({
-    data: {},
+    data: MOCK_DATA,
 }));
 
 // -- testables
-const request = new RestAPIRequest(mockAxios as any);
+class Request extends RestAPIRequest {
+    axios = mockAxios as any;
+}
+const request = new Request();
 
 describe('requests/RestAPIRequest', () => {
     describe('send()', () => {
@@ -29,9 +33,8 @@ describe('requests/RestAPIRequest', () => {
 
             const result = await request.send(requestConfig);
 
-            expect(result.requestConfig).toEqual(requestConfig);
-            expect(result).toHaveProperty('response');
-            expect(result.response).toHaveProperty('data');
+            expect(result.config).toEqual(requestConfig);
+            expect(result.data).toEqual(MOCK_DATA);
         });
     });
 });

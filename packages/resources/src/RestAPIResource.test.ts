@@ -22,7 +22,7 @@ class InventorModel implements Models.IModel<TInventor> {
 
 // mock requests
 const mockRequest__isSuccessful: Requests.IRequest = {
-    send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TApiResult<any>> => {
+    send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TRequestResponse> => {
         const inventors: TInventor[] = [
             {
                 id: 1,
@@ -36,18 +36,14 @@ const mockRequest__isSuccessful: Requests.IRequest = {
 
         if (config?.params?.id) {
             return Promise.resolve<any>({
-                requestConfig: config,
-                response: {
-                    data: inventors[0],
-                },
+                config,
+                data: inventors[0],
             });
         }
 
         return Promise.resolve({
-            requestConfig: config,
-            response: {
-                data: inventors,
-            },
+            config,
+            data: inventors,
         });
     }),
 }
@@ -55,27 +51,23 @@ const mockRequest__fails: Requests.IRequest = {
     send: jest.fn(() => Promise.reject('This mock request class throws an error.')),
 }
 const mockRequest__sendsNoData: Requests.IRequest = {
-    send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TApiResult<any>> => {
+    send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TRequestResponse<any>> => {
         if (config?.params?.id) {
             return Promise.resolve({
-                requestConfig: config,
-                response: {
-                    data: null,
-                },
+                config,
+                data: null,
             });
         }
 
         return Promise.resolve({
-            requestConfig: config,
-                response: {
-                    data: [],
-                },
+            config,
+            data: [],
         });
     }),
 }
 
 // mock transformers
-const mockResponseTransformer: Transformers.ITransformer<Requests.TApiResult<any>, InventorModel> = {
+const mockModelTransformer: Transformers.ITransformer<Requests.TApiResult<any>, InventorModel> = {
     transform: jest.fn((data: any) => new InventorModel(data)),
     untransform: jest.fn((model: InventorModel) => model.serialize()),
 }
@@ -84,26 +76,8 @@ const mockResponseTransformer: Transformers.ITransformer<Requests.TApiResult<any
 // standard resource for basic tests
 class Resource extends RestAPIResource<InventorModel, TQuery> {
     request = mockRequest__isSuccessful;
-    responseTransformer = mockResponseTransformer;
-
-    /**
-     * Builds the config object for a request.
-     * 
-     * @param {TRequestBuilderConfig<Q, C>} requestConfig
-     * @param {TRequestBuilderConfig<Q, C>=} prevRequestConfig
-     * @returns {Promise<C>}
-     */
-    protected async makeRequestConfig(
-        requestConfig: Requests.TRequestBuilderConfig<any, Requests.TApiRequestConfig>,
-        prevRequestConfig?: Requests.TRequestBuilderConfig<any, Requests.TApiRequestConfig>,
-    ): Promise<Requests.TApiRequestConfig> {
-        return {
-            url: 'http://localhost/api/v1/inventors',
-            method: 'GET',
-            params: requestConfig.query,
-            ...requestConfig.requestConfig,
-        };
-    }
+    modelTransformer = mockModelTransformer;
+    url = 'http://localhost/api/v1';
 }
 
 // resource whose requests will fail
@@ -166,7 +140,7 @@ describe('resources/RestAPIResource', () => {
 
         describe('IF request returns no data', () => {
             it('returns a promise that resolves to null', async () => {
-                const response = await resourceWithNoData.get(2);
+                const response = await resourceWithNoData.get(9);
                 expect(response).toBe(null);
             });
         });

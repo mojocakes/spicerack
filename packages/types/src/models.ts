@@ -52,7 +52,7 @@ export namespace Models {
          * Available config parameters
          */
         C extends Record<string, any>,
-    > extends Resources.IResource<T, Q, C> {
+    > extends Resources.IResource<T, Q> {
         //
     }
 

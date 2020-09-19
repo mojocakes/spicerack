@@ -1,6 +1,6 @@
 import { Container as InversifyContainer, inject } from 'inversify';
 import { Container } from './Container';
-import { decorate, injectable } from '../';
+import { registerInjectable } from '../';
 
 // -- mocks
 const inversifyContainer = new InversifyContainer();
@@ -14,7 +14,7 @@ describe('inject/Container', () => {
             // create a mock dependency
             const mockDependencyID = Symbol('MOCK_DEPENDENCY_ID');
             class MockDependency {}
-            decorate(injectable(), MockDependency);
+            registerInjectable(MockDependency);
             
             // register mock dependency directly with inversify
             inversifyContainer.bind(mockDependencyID).to(MockDependency).inSingletonScope();
@@ -26,13 +26,13 @@ describe('inject/Container', () => {
     });
 
     describe('register()', () => {
-        it('registers a dependency', () => {
+        it('registers a dependency', async () => {
             // create a mock dependency
             const mockDependencyID = Symbol('MOCK_DEPENDENCY_ID');
             class MockDependency {}
-            decorate(injectable(), MockDependency);
             
             // register mock dependency with our container
+            registerInjectable(MockDependency);
             container.register(mockDependencyID, MockDependency);
 
             // resolve from our container
@@ -59,10 +59,9 @@ describe('inject/Container', () => {
                 }
             }
 
-            decorate(injectable(), MockDependencyOne);
-            decorate(injectable(), MockDependencyTwo);
-            
             // register mock dependencies with our container
+            registerInjectable(MockDependencyOne);
+            registerInjectable(MockDependencyTwo);
             container.register(mockDependencyIDs[0], MockDependencyOne);
             container.register(mockDependencyIDs[1], MockDependencyTwo);
 

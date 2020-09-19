@@ -35,5 +35,5 @@ export namespace Inject {
     ;
 
     // Available service identifiers.
-    export type TServiceIdentifier = string | number | Symbol;
+    export type TServiceIdentifier = string | symbol;
 }

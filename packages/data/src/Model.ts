@@ -12,7 +12,7 @@ export abstract class Model<T extends Record<string, any>> implements Models.IMo
 
     public fillable: string[] = [];
 
-    constructor(protected data: T) {
+    constructor(public readonly data: T) {
         // Use a proxy to handle requests for any properties
         return new Proxy(this, this.proxyHandler);
     }

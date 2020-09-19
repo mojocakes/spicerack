@@ -1,28 +1,48 @@
 import axiosLibrary, { AxiosInstance } from 'axios';
 import * as Types from '@spicerack/types';
+import { registerInjectable } from '@spicerack/inject';
+import { RequestConfigException } from './exceptions';
 
 export class RestAPIRequest<
     /**
-     * The config type.
+     * The request config.
      */
     C extends Types.Requests.TApiRequestConfig = Types.Requests.TApiRequestConfig,
-> implements Types.Requests.IRestAPIRequest<C> {
-    constructor(protected axios: AxiosInstance = axiosLibrary) {
-        //
-    }
 
     /**
-     * Makes a request.
+     * The returned data.
+     */
+    D = any,
+> implements Types.Requests.IRequest<C, any> {
+    /**
+     * The axios library we're using to make the actual requests.
+     * 
+     * @param {AxiosInstance} axios
+     */
+    protected axios: AxiosInstance = axiosLibrary;
+
+    /**
+     * Makes an HTTP API request.
      * 
      * @param {C} config 
-     * @returns {Promise<TApiResult<T>>}
+     * @returns {Promise<Types.Requests.TRequestResponse>}
      */
-    public async send<T = any>(config: C): Promise<Types.Requests.TApiResult<T>> {
+    public async send<DO = D>(config: C): Promise<Types.Requests.TRequestResponse<DO, C>> {
+        if (!config.url) {
+            throw new RequestConfigException('Missing "url" property. Cannot make HTTP request.', { config });
+        }
+
+        if (!config.method) {
+            throw new RequestConfigException('Missing "method" property. Cannot make HTTP request.', { config });
+        }
+
         const response = await this.axios(config);
 
         return {
-            requestConfig: config,
-            response,
+            config,
+            data: response.data,
         };
     }
 }
+
+registerInjectable(RestAPIRequest, 'services.requests.restApiRequest');

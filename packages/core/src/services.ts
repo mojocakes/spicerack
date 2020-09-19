@@ -1,7 +1,6 @@
 import * as Types from '@spicerack/types';
-import { injectable } from '@spicerack/inject';
+import { registerInjectable } from '@spicerack/inject';
 
-@injectable()
 export abstract class Service implements Types.Generic.IService {
     /**
      * Resolves when this class is ready to be consumed.
@@ -10,3 +9,5 @@ export abstract class Service implements Types.Generic.IService {
      */
     public readonly ready: Promise<void> = Promise.resolve();
 }
+
+registerInjectable(Service);

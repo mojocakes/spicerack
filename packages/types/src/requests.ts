@@ -1,34 +1,26 @@
+import { Models } from './models';
+
 export namespace Requests {
     export interface IRequest<
         /**
-         * The config type.
+         * The request config.
          */
-        C extends Object = TRequestConfig,
+        C extends Object = any,
+
+        /**
+         * The returned data.
+         */
+        D = any,
     > {
         /**
          * Makes a request.
          * 
-         * @param {C} config 
+         * @param {C} Config
          * @returns {Promise<any>}
          */
-        send(config: C): Promise<any>;
+        send<DO = D>(config: C): Promise<TRequestResponse<DO, C>>;
     }
     
-    export interface IRestAPIRequest<
-        /**
-         * The config type.
-         */
-        C extends TApiRequestConfig = TApiRequestConfig,
-    > extends IRequest<C> {
-        /**
-         * Makes a request.
-         * 
-         * @param {C} config 
-         * @returns {Promise<TApiResult<T>>}
-         */
-        send<T = any>(config: C): Promise<TApiResult<T>>;
-    }
-
     export type TRequestConfig = {};
     
     export type TAPIRequestType =
@@ -38,14 +30,19 @@ export namespace Requests {
         | 'POST'
         | 'PUT'
     ;
+
+    export type TRequestResponse<D = any, C = any> = {
+        config: C,
+        data: D,
+    }
     
-    export type TApiRequestConfig = TRequestConfig & {
+    export type TApiRequestConfig<T = {}> = TRequestConfig & {
         body?: Record<string, any>;
         headers?: Record<string, string>;
         params?: Record<string, any>;
         url: string;
         method: TAPIRequestType;
-    }
+    } & T;
     
     export type TApiResponse<T> = {
         data: T;
@@ -66,4 +63,8 @@ export namespace Requests {
         query?: Partial<Q>,
         requestConfig?: Partial<RQ>,
     };
+
+    export type TBaseModelQuery = {
+        id?: null | Models.TModelIdentifier;
+    }
 }

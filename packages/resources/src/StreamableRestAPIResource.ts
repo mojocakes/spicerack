@@ -1,9 +1,5 @@
-import { decorate, injectable } from '@spicerack/core';
+import { Models, Requests, Resources, Transformers } from '@spicerack/types';
 import { RestAPIResource } from './RestAPIResource';
-import { TApiRequestConfig } from '@spicerack/core/src/types/requests';
-import { IModel } from '@spicerack/core/src/interfaces/models';
-import { TDefaultModelProperties } from '@spicerack/core/src/types/models';
-import { IStreamableResource } from '@spicerack/core/src/interfaces/resources';
 
 export abstract class StreamableRestAPIResource<
     /**
@@ -11,20 +7,24 @@ export abstract class StreamableRestAPIResource<
      * 
      * TODO: Fix this type to specify optional "id" property of model
      */
-    T extends IModel<any & TDefaultModelProperties>,
+    T extends Models.IModel<any & Models.TDefaultModelProperties>,
     /**
      * Available query parameters
      */
-    Q extends Object = {},
+    Q extends Requests.TBaseModelQuery = Requests.TBaseModelQuery,
+> extends RestAPIResource<T, Q> implements Resources.IStreamableResource<T, Q> {
     /**
-     * Available config parameters
+     * Transformer that prepares a query object to get the next page of results.
+     * 
+     * The "transform" method should prepare the next page query.
+     * The "untransform" method should prepare the previous page query.
      */
-    C extends TApiRequestConfig = TApiRequestConfig,
-> extends RestAPIResource<T, Q, C> implements IStreamableResource<T, Q, C> {
+    protected abstract paginatedQueryTransformer: Transformers.ITransformer<Q, Q>;
+
     /**
      * Streams all entities found for the given query.
      * 
-     * @param {Q=} query 
+     * @param {Q} query 
      * @param {Partial<C>} requestConfig
      * @returns {AsyncIterable<T>}
      * 
@@ -33,56 +33,44 @@ export abstract class StreamableRestAPIResource<
      *     console.log(entity);
      * }
      */
-    public async *stream(query?: Q, requestConfig?: Partial<C>): AsyncIterable<T> {
+    public async *stream(query: Q): AsyncIterableIterator<T> {
         const self = this;
+        const queries: Q[] = [
+            // This ensures the query defaults are set to request the initial page of data
+            self.paginatedQueryTransformer.untransform(
+                self.paginatedQueryTransformer.transform(query)
+            ),
+        ];
+        // helper fn that returns the last item in an array
+        const getLastItem = (arr: any[]) => arr[arr.length - 1];
 
-        function getNextParams(params: C['params'] = {}): C['params'] {
-            return {
-                per_page: 5,
-                ...params,
-                page: Math.max(1, params.page || 0) + 1,
-            };
-        }
-
+        // yields an array of pages
         async function *yieldPages(): AsyncIterable<T[]> {
             let hasNextPage: boolean = true;
-            let params: C['params'] = getNextParams({
-                ...query,
-            });
-
-            const configHistory: any[] = [{ requestConfig, query }, undefined];
 
             while (hasNextPage) {
                 try {
-                    const config = await self.makeRequestConfig(configHistory[0], configHistory[1]);
-                    // prepare the next two arguments to "makeRequestConfig"
-                    configHistory.unshift(config);
-                    configHistory.length = 2;
-                    
-                    const response = await self.request.send(config);
-                    params = getNextParams(params);
-                    yield self.responseTransformer.transform(response);
+                    // Make the request
+                    const items = await self.query(getLastItem(queries));
+
+                    // Prepare the next query
+                    queries.push(self.paginatedQueryTransformer.transform(getLastItem(queries)));
+
+                    // Stop the loop if no items were returned
+                    if (!items || !items.length) {
+                        hasNextPage = false;
+                    }
+
+                    yield items as T[];
                 } catch {
                     hasNextPage = false;
                 }
-                
-                // if (!self.hasNextPage(response)) {
-                //     hasNextPage = false;
-                // }
             }
         }
 
+        // yields an array of items
         for await (let results of yieldPages()) {
             yield* results;
         }
     }
-
-    // protected abstract hasNextPage(response: TPaginatedApiResponse<T[]>): boolean {
-    //     const previousItemCount = (response.page - 1) * response.per_page;
-    //     const pageCount = response.data.length;
-    //     const total = previousItemCount + pageCount;
-    //     return total < response.total;
-    // }
 }
-
-decorate(injectable(), StreamableRestAPIResource);

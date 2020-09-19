@@ -1,4 +1,5 @@
 import * as Types from '@spicerack/types';
+import { registerInjectable } from '@spicerack/inject';
 import { Service } from './services';
 
 /**
@@ -19,3 +20,5 @@ export abstract class App extends Service implements Types.App.IApp {
         //
     }
 }
+
+registerInjectable(App);

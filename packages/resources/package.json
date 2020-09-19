@@ -12,8 +12,11 @@
   "main": "index.ts",
   "dependencies": {
     "@spicerack/core": "*",
+    "@spicerack/inject": "*",
+    "@spicerack/requests": "*",
     "@spicerack/types": "*",
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "deepmerge":"~4.2.2"
   },
   "directories": {
     "lib": "lib",

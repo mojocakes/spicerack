@@ -1,36 +1,73 @@
+// import deepmerge from 'deepmerge';
+import '@spicerack/requests';
+import { container } from '@spicerack/inject';
+import { ResourceException, ResourceTransformerException } from './exceptions';
 import { Models, Requests, Resources, Transformers } from '@spicerack/types';
-import { ResourceException } from './exceptions';
 
-type TBaseQuery = {
-    id?: null | Models.TModelIdentifier;
+type TRequestTransformerInput<Q> = {
+    query: Q,
+} & Partial<Requests.TApiRequestConfig>;
+
+class DefaultRequestTransformer implements Transformers.ITransformer<TRequestTransformerInput<any>, Requests.TApiRequestConfig> {
+    transform(config: TRequestTransformerInput<any>): Requests.TApiRequestConfig {
+        config.params = config.query;
+        delete config.query;
+
+        if (!config.url) {
+            throw new ResourceTransformerException(`
+                No "url" property was provided to the default request transformer.
+                The default request transformer does not provide a url.
+                Either provide a url when calling "transform" or implement your own transformer.
+            `);
+        }
+
+        if (!config.method) {
+            throw new ResourceTransformerException(`
+                No "method" property was provided to the default request transformer.
+                The default request transformer does not provide a method.
+                Either provide a method when calling "transform" or implement your own transformer.
+            `);
+        }
+
+        return config as Requests.TApiRequestConfig;
+    }
+
+    untransform(): any {
+        throw new ResourceTransformerException('"untransform" not implemented.');
+    }
 }
 
 export abstract class RestAPIResource<
     /**
-     * The model type
+     * The model type this resource handles.
      */
     T extends Models.IModel<T & Models.TDefaultModelProperties>,
     /**
      * Available query parameters
      */
-    Q extends TBaseQuery = TBaseQuery,
+    Q extends Requests.TBaseModelQuery = Requests.TBaseModelQuery,
+> implements Resources.IResource<T, Q> {
     /**
-     * Available config parameters
+     * Transforms raw response data into models.
      */
-    C extends Requests.TApiRequestConfig = Requests.TApiRequestConfig,
-    /**
-     * Request response type.
-     */
-    // R extends Object = any,
-> implements Resources.IResource<T, Q, C> {
+    protected abstract modelTransformer: Transformers.ITransformer<any, T>;
+
     /**
      * Service used to make API requests.
-     * 
-     * @var {IRestAPIRequest<C>}
      */
-    protected abstract request: Requests.IRestAPIRequest<C>;
+    protected request: Requests.IRequest<Requests.TApiRequestConfig, null | T> = container.get('services.requests.restApiRequest');
 
-    protected abstract responseTransformer: Transformers.ITransformer<any, T>;
+    /**
+     * Transforms resource queries into request queries.
+     * Takes an array of objects that contain the query, and any other stuff it needs.
+     */
+    protected requestTransformer: Transformers.ITransformer<TRequestTransformerInput<Q>, Requests.TApiRequestConfig> = new DefaultRequestTransformer();
+
+    /**
+     * The URL to send requests to.
+     * You can override this for each request by overriding the requestTransformer.
+     */
+    protected url?: string;
 
     /**
      * Deletes an entity.
@@ -39,19 +76,16 @@ export abstract class RestAPIResource<
      * @returns {Promise<void>}
      */
     public async delete(id: Models.TModelIdentifier): Promise<void> {
-        const requestConfig = await this.makeRequestConfig({
-            requestConfig: {
-                method: 'DELETE',
-            },
-            query: {
-                id,
-            }
-        } as Requests.TRequestBuilderConfig<Q, C>);
+        const requestConfig = this.requestTransformer.transform({
+            method: 'DELETE',
+            query: { id },
+            url: this.url,
+        } as TRequestTransformerInput<Q>);
 
         try {
             await this.request.send(requestConfig);
         } catch (e) {
-            throw new ResourceException(e, 'Failed to delete resource');
+            throw new ResourceException('Failed to delete resource', e);
         }
     }
 
@@ -59,30 +93,25 @@ export abstract class RestAPIResource<
      * Fetches a single entity by its identitifer.
      * 
      * @param {TModelIdentifier} id 
-     * @param {C=} config
      * @returns {Promise<null | T>}
      */
-    public async get(id: Models.TModelIdentifier, config?: C): Promise<null | T> {
-        const requestConfig = await this.makeRequestConfig({
-            requestConfig: {
-                ...(config || {}),
-                method: 'GET',
-            },
-            query: {
-                id,
-            },
-        } as Requests.TRequestBuilderConfig<Q, C>);
+    public async get(id: Models.TModelIdentifier): Promise<null | T> {
+        const requestConfig = this.requestTransformer.transform({
+            method: 'GET',
+            query: { id },
+            url: this.url,
+        } as TRequestTransformerInput<Q>);
 
         try {
             const response = await this.request.send(requestConfig);
 
-            if (!response?.response?.data) {
+            if (!response?.data) {
                 return null;
             }
 
-            return this.responseTransformer.transform(response.response.data);
+            return this.modelTransformer.transform(response.data);
         } catch (e) {
-            throw new ResourceException(e, 'Failed to get resource');
+            throw new ResourceException('Failed to get resource', e);
         }
     }
 
@@ -90,26 +119,26 @@ export abstract class RestAPIResource<
      * Fetches multiple entities that match the given query.
      * TODO: This should return a collection instance
      * 
-     * @param query 
+     * @param {Q} query 
+     * @returns {Promise<null[] | T[]}
      */
     public async query(query: Q): Promise<null[] | T[]> {
-        const requestConfig = await this.makeRequestConfig({
-            requestConfig: {
-                method: 'GET',
-            },
+        const config = this.requestTransformer.transform({
+            method: 'GET',
             query,
-        } as any as Requests.TRequestBuilderConfig<Q, C>);
+            url: this.url,
+        });
 
         try {
-            const response = await this.request.send(requestConfig);
+            const response = await this.request.send<Object[]>(config);
 
-            if (!response?.response?.data || !response?.response?.data.length) {
+            if (!response?.data || !response?.data?.length) {
                 return [];
             }
 
-            return response.response.data.map((item: any) => this.responseTransformer.transform(item));
+            return response.data.map((item: any) => this.modelTransformer.transform(item));
         } catch (e) {
-            throw new ResourceException(e, 'Failed to query resource');
+            throw new ResourceException('Failed to query resource', e);
         }
     }
 
@@ -122,43 +151,19 @@ export abstract class RestAPIResource<
     public async save(entity: T): Promise<T> {
         const id = (entity as Models.IModel<T> & Models.TDefaultModelProperties).id || undefined;
 
-        const requestConfig = await this.makeRequestConfig({
-            requestConfig: {
-                // TODO: figure out how to type properties available on model instance
-                method: entity.data.id ? 'PUT' : 'POST',
-            },
-            query: {
-                id,
-            },
-        } as Requests.TRequestBuilderConfig<Q, C>);
-
-        requestConfig.body = entity.serialize();
+        const requestConfig = this.requestTransformer.transform({
+            body: entity.serialize(),
+            // TODO: figure out how to type properties available on model instance
+            method: entity.data.id ? 'PUT' : 'POST',
+            query: { id },
+            url: this.url,
+        } as TRequestTransformerInput<Q>);
 
         try {
             const response = await this.request.send(requestConfig);
-            return this.responseTransformer.transform(response.response.data);
+            return this.modelTransformer.transform(response.data);
         } catch (e) {
-            throw new ResourceException(e, 'Failed to save resource');
+            throw new ResourceException('Failed to save resource', e);
         }
-
     }
-
-    /**
-     * Builds the config object for a request.
-     * 
-     * @param {TRequestBuilderConfig<Q, C>} requestConfig
-     * @param {TRequestBuilderConfig<Q, C>=} prevRequestConfig
-     * @returns {Promise<C>}
-     */
-    protected abstract async makeRequestConfig(
-        /**
-         * Query and request config overrides
-         */
-        requestConfig: Requests.TRequestBuilderConfig<Q, C>,
-        /**
-         * Optional config passed to previous request.
-         * Useful for getting next page config etc.
-         */
-        prevRequestConfig?: Requests.TRequestBuilderConfig<Q, C>,
-    ): Promise<C>;
 }

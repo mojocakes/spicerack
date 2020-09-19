@@ -1,6 +1,6 @@
 import { boot } from './boot';
 import { App } from './App';
-import { inject, injectable, decorate } from '@spicerack/inject';
+import { inject, registerInjectable } from '@spicerack/inject';
 import * as Types from '@spicerack/types';
 
 // -- mocks
@@ -17,7 +17,7 @@ describe('core/boot', () => {
         // create a mock app that relies on an injected dependency
         class MockApp extends App {
             public static registerDependencies = jest.fn(async (container: Types.Inject.IContainer) => {
-                decorate(injectable(), MockDependency);
+                registerInjectable(MockDependency);
                 container.register('MOCK_DEPENDENCY', MockDependency);
             });
 
@@ -28,6 +28,7 @@ describe('core/boot', () => {
                 this.service.send();
             }
         }
+        registerInjectable(MockApp);
 
         await boot(MockApp);
         expect(MockApp.registerDependencies).toHaveBeenCalled();
@@ -42,6 +43,7 @@ describe('core/boot', () => {
                 constructorCall();
             }
         }
+        registerInjectable(MockApp);
         
         await boot(MockApp);
         expect(constructorCall).toHaveBeenCalled();

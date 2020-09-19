@@ -1,11 +1,6 @@
-import { Container as InversifyContainer } from 'inversify';
-import { Container } from './src/Container';
+import rootContainer from './src/rootContainer';
 
-// Make the root dependency container.
-const inversifyContainer = new InversifyContainer();
-export const container = new Container(inversifyContainer);
-
-export default container;
+export default rootContainer;
+export const container = rootContainer;
 export { Container } from './src/Container';
 export * from './src/helpers';
-export { decorate } from 'inversify';

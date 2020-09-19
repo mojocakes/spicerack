@@ -1,19 +1,17 @@
 import { Models } from './models';
+import { Requests } from './requests';
 
 export namespace Resources {
     export interface IResource<
         /**
-         * The model type
+         * The model type this resource handles.
          */
         T extends Models.IModel<any>,
+
         /**
-         * Available query parameters
+         * Available query parameters.
          */
         Q extends Record<string, any>,
-        /**
-         * Available config parameters
-         */
-        C extends Record<string, any>,
     > {
         /**
          * Deletes an entity.
@@ -26,17 +24,17 @@ export namespace Resources {
         /**
          * Fetches a single entity by its identitifer.
          * 
-         * @param {TModelIdentifier} id 
-         * @param {C=} config
+         * @param {TModelIdentifier} id
          * @returns {Promise<null | T>}
          */
-        get(id: Models.TModelIdentifier, config?: C): Promise<null | T>;
+        get(id: Models.TModelIdentifier): Promise<null | T>;
 
         /**
          * Fetches multiple entities that match the given query.
          * TODO: This should return a collection instance
          * 
-         * @param query 
+         * @param query
+         * @returns {Promise<null[] | T[]>}
          */
         query(query: Q): Promise<null[] | T[]>;
 
@@ -51,14 +49,13 @@ export namespace Resources {
 
     export interface IStreamableResource<
         T extends Models.IModel<any>,
-        Q extends Object = {},
-        C extends Object = {}
-    > extends IResource<T, Q, C> {
+        Q extends Record<string, any> = {},
+        RC extends Record<string, any> = Requests.TApiRequestConfig,
+    > extends IResource<T, Q> {
         /**
          * Streams all entities found for the given query.
          * 
-         * @param {Q=} query 
-         * @param {Partial<C>=} config
+         * @param {Q} query
          * @returns {AsyncIterable<T>}
          * 
          * @example
@@ -66,6 +63,6 @@ export namespace Resources {
          *     console.log(entity);
          * }
          */
-        stream(query?: Q, config?: Partial<C>,): AsyncIterable<T>;
+        stream(query: Q): AsyncIterable<T>;
     }
 }

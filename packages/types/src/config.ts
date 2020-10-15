@@ -1,9 +1,11 @@
+import { Generic } from './generic';
+
 export namespace Config {
     export type TConfig = Record<string, any>;
     
     export interface IConfig<
         T extends Record<string, any> = TConfig
-    > {
+    > extends Generic.IService {
         /**
          * Retrieves all config values.
          * 

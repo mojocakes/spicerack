@@ -1,4 +1,4 @@
-import { Service } from '../packages/core/src/services';
+import { Service } from '../packages/core/src/Service';
 import { injectable, inject } from "../packages/core/src/container";
 import { IServer } from "./types";
 import { RouteController } from "./RouteController";

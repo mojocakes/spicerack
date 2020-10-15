@@ -1,5 +1,3 @@
-import { Resources } from './resources';
-
 export namespace Models {
     export interface IModel<T extends Object> {
         /**
@@ -37,23 +35,6 @@ export namespace Models {
         each(callback: (model: T) => any): void;
     
         filter(criteria: object): IModelCollection<T>;
-    }
-    
-    export interface IModelRepository<
-        /**
-         * The model type
-         */
-        T extends IModel<any>,
-        /**
-         * Available query parameters
-         */
-        Q extends Record<string, any>,
-        /**
-         * Available config parameters
-         */
-        C extends Record<string, any>,
-    > extends Resources.IResource<T, Q> {
-        //
     }
 
     export type TDefaultModelProperties = {

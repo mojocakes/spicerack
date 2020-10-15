@@ -1,11 +1,11 @@
-import { decorate, injectable } from '@spicerack/core';
-import { IModel, IModelRepository } from '@spicerack/core/src/interfaces/models';
+import { Data, Models } from '@spicerack/types';
+import { registerInjectable } from '@spicerack/inject';
 
 export abstract class ModelRepository<
     /**
      * The model type
      */
-    T extends IModel<any>,
+    T extends Models.IModel<any>,
     /**
      * Available query parameters
      */
@@ -14,7 +14,7 @@ export abstract class ModelRepository<
      * Available config parameters
      */
     C extends Record<string, any>,
-> implements IModelRepository<T, Q, C> {
+> implements Data.IRepository<T, Q> {
     /**
      * Deletes an entity.
      * 
@@ -49,4 +49,4 @@ export abstract class ModelRepository<
     public abstract save(entity: T): Promise<T>;
 }
 
-decorate(injectable(), ModelRepository);
+registerInjectable(ModelRepository);

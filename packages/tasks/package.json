@@ -12,7 +12,13 @@
   "main": "index.ts",
   "dependencies": {
       "@spicerack/core": "*",
-      "@spicerack/types": "*"
+      "@spicerack/inject": "*",
+      "@spicerack/types": "*",
+      "moment":"^2.29.0",
+      "uuid": "^8.0.0"
+  },
+  "devDependencies": {
+      "@types/uuid":"^8.0.0"
   },
   "directories": {
     "lib": "lib",

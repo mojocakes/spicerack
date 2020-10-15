@@ -1,105 +1,143 @@
-import { IService } from "./generic";
+import { Generic } from "./generic";
+import { Data } from "./data";
 
-export type TIntervalGrammar =
-    | 'millisecond'
-    | 'milliseconds'
-    | 'second'
-    | 'seconds'
-    | 'minute'
-    | 'minutes'
-    | 'hour'
-    | 'hours'
-    | 'day'
-    | 'days'
-    | 'month'
-    | 'months'
-;
+export namespace Tasks {
+    export interface ITask extends Generic.IService {
+        /**
+         * Checks whether this task is running
+         * 
+         * @returns {boolean}
+         */
+        readonly isRunning: boolean;
 
-export interface ITask extends IService {
-    /**
-     * Unique ID for this task.
-     * This is used to stop duplicate tasks of the same type from being scheduled.
-     * 
-     * @var {string}
-     */
-    readonly uid: string;
+        /**
+         * Unique ID for this task.
+         * This is used to stop duplicate tasks of the same type from being scheduled.
+         * 
+         * @var {string}
+         */
+        readonly id: string;
+    
+        /**
+         * Runs the task.
+         * 
+         * @param {...any} args 
+         * @returns {Promise<any>}
+         */
+        run(...args: any[]): Promise<any>;
+    }
+    
+    export interface IScheduledTask extends ITask {
+        /**
+         * The schedule for this task.
+         * 
+         * @var {ITaskSchedule}
+         */
+        readonly schedule: ITaskSchedule;
 
-    /**
-     * Runs the task.
-     * 
-     * @param {...any} args 
-     * @returns {Promise<any>}
-     */
-    run(...args: any[]): Promise<any>;
-}
+        /**
+         * Sets the run schedule of this task.
+         * 
+         * @param {ITaskSchedule} schedule How often this task should run.
+         */
+        setSchedule(schedule: ITaskSchedule): IScheduledTask;
+    }
+    
+    export interface ITaskManager extends Data.IRepository<IScheduledTask>, Generic.IService {
+        /**
+         * Retrieves all scheduled tasks.
+         * 
+         * @returns {Promise<IScheduledTask[]>}
+         */
+        all(): Promise<IScheduledTask[]>
 
-export interface IScheduledTask {
-    /**
-     * The frequency this task runs at expresses as a cron string.
-     * 
-     * @var {string}
-     */
-    readonly cron: string;
+        /**
+         * Unschedules and removes all tasks.
+         * 
+         * @returns {Promise<void>}
+         */
+        clear(): Promise<void>;
 
-    /**
-     * The task
-     * 
-     * @var {ITask}
-     */
-    readonly task: ITask;
+        /**
+         * Saves a scheduled task. Schedule will be applied.
+         * 
+         * @param {IScheduledTask} task
+         * @returns {Promise<T>}
+         */
+        save(task: IScheduledTask): Promise<IScheduledTask>;
 
-    /**
-     * Starts the task
-     * 
-     * @returns {IScheduledTask}
-     */
-    start(): IScheduledTask;
+        /**
+         * Saves multiple scheduled tasks. Schedules will be applied.
+         * 
+         * @param {IScheduledTask[]} tasks
+         * @returns {Promise<IScheduledTask[]>}
+         */
+        saveAll(tasks: IScheduledTask[]): Promise<IScheduledTask[]>;
 
-    /**
-     * Stops the task
-     * 
-     * @returns {IScheduledTask}
-     */
-    stop(): IScheduledTask;
+        /**
+         * Schedules a task and saves.
+         * 
+         * @param {ITask} task
+         * @param {ITaskSchedule} schedule
+         * @returns {Promise<void>}
+         */
+        schedule(task: ITask, schedule: ITaskSchedule): Promise<IScheduledTask>;
+    }
 
-    /**
-     * Checks whether this task is running
-     * 
-     * @returns {boolean}
-     */
-    running(): boolean;
+    export interface ITaskSchedule {
+        readonly config: {
+            at?: null | Date;
+            every?: null | TTaskInterval;
+            skip?: null | number;
+            from?: null | Date;
+        };
 
-    /**
-     * Sets how often this task should run.
-     * 
-     * @param {TIntervalGrammar} interval 
-     * @param {number?} frequency 
-     */
-    every(interval: TIntervalGrammar, frequency?: number): IScheduledTask;
+        /**
+         * Gets the next date/time this schedule should run.
+         * 
+         * @var {null | Date}
+         */
+        readonly next: null | Date;
 
-    /**
-     * Schedules this task using a custom CRON string.
-     * 
-     * @param {string} cron
-     * @returns {IScheduledTask}
-     */
-    setCron(cron: string): IScheduledTask;
-}
+        /**
+         * Sets the date / time that this schedule will run at, and specifies it will run ONCE.
+         * 
+         * @param date 
+         */
+        at(date: Date): ITaskSchedule;
 
-export interface ITaskManager {
-    /**
-     * Gets a scheduled task.
-     * 
-     * @param {string} taskName
-     * @returns {null | IScheduledTask}
-     */
-    get(taskName: string): null | IScheduledTask;
+        /**
+         * Sets the interval for this schedule, and specifies it will run MULTIPLE TIMES.
+         * ie. "day" = once every 24 hours
+         * 
+         * @param interval 
+         */
+        every(interval: TTaskInterval): ITaskSchedule;
 
-    /**
-     * Schedules a task to be run.
-     * 
-     * @param {ITask} task
-     * @returns {void}
-     */
-    schedule(task: ITask): IScheduledTask;
+        /**
+         * Sets the start date/time of the schedule
+         * ie. "new Date('2021-01-01 00:00')" = start running from midnight on new year's eve 2021
+         * 
+         * @param date 
+         */
+        from(date: Date): ITaskSchedule;
+
+        /**
+         * Sets how many intervals should be skipped each time
+         * ie. "4" = every 4 days
+         * 
+         * @param times 
+         */
+        skip(times: number): ITaskSchedule;
+    }
+
+    export type TTaskInterval =
+        | 'millisecond'
+        | 'second'
+        | 'minute'
+        | 'hour'
+        | 'day'
+        | 'month'
+        | 'year'
+    ;
 }

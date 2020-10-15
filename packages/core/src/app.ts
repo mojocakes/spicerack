@@ -1,6 +1,6 @@
 import * as Types from '@spicerack/types';
 import { registerInjectable } from '@spicerack/inject';
-import { Service } from './services';
+import { Service } from './Service';
 
 /**
  * The App class is typically the root of a project,

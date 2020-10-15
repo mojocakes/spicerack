@@ -1,8 +1,9 @@
 // import deepmerge from 'deepmerge';
 import '@spicerack/requests';
+import { Data, Models, Requests, Transformers } from '@spicerack/types';
 import { container } from '@spicerack/inject';
+import { Service } from '@spicerack/core';
 import { ResourceException, ResourceTransformerException } from './exceptions';
-import { Models, Requests, Resources, Transformers } from '@spicerack/types';
 
 type TRequestTransformerInput<Q> = {
     query: Q,
@@ -46,7 +47,7 @@ export abstract class RestAPIResource<
      * Available query parameters
      */
     Q extends Requests.TBaseModelQuery = Requests.TBaseModelQuery,
-> implements Resources.IResource<T, Q> {
+> extends Service implements Data.IRepository<T, Q> {
     /**
      * Transforms raw response data into models.
      */

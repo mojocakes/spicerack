@@ -22,11 +22,8 @@ export class TaskSchedule implements Tasks.ITaskSchedule {
      * @var {null | Date}
      */
     public get next(): null | Date {
-        // if (this._next && this._next > this.now()) {
-        //     return this._next;
-        // }
-
-        const next = moment(this.config.at || this.now());
+        // TODO: Test this.config.from
+        const next = moment(this.config.at || this.config.from || this.now());
 
         if (this.config.every) {
             switch (this.config.every) {

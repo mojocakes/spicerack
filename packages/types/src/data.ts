@@ -1,3 +1,5 @@
+import { Generic } from './generic';
+
 export namespace Data {
     export interface IRepository<
         /**
@@ -9,7 +11,7 @@ export namespace Data {
          * Available query parameters.
          */
         Q extends Record<string, any> = any,
-    > {
+    > extends Generic.IService {
         /**
          * Deletes an entity.
          * 

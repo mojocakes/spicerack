@@ -13,6 +13,7 @@
   "dependencies": {
     "@spicerack/core": "*",
     "@spicerack/types": "*",
+    "@spicerack/inject": "*",
     "dotenv": "^8.2.0"
   },
   "directories": {

@@ -4,21 +4,13 @@ require('dotenv').config();
 import { Config } from '@spicerack/types';
 // # core
 import { Service } from '@spicerack/core';
+import { registerInjectable } from '@spicerack/inject';
 
 /**
  * Loads config values from a .env file
  */
 export class EnvConfig<T = Config.TConfig> extends Service implements Config.IConfig<T> {
-    constructor(
-        /**
-         * The config object.
-         * 
-         * @var {T}
-         */
-        private config: T = (process.env as any),
-    ) {
-        super();
-    }
+    private config: T = (process.env as any);
 
     /**
      * Retrieves all config values.
@@ -55,3 +47,5 @@ export class EnvConfig<T = Config.TConfig> extends Service implements Config.ICo
         this.config[key] = value;
     }
 }
+
+registerInjectable(EnvConfig);

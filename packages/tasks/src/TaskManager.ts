@@ -71,7 +71,7 @@ export class TaskManager extends Service implements Tasks.ITaskManager {
      */
     public async delete(id: string): Promise<void> {
         await this.ready;
-        // TODO: perform unschedule
+        delete this.taskRunTimes[id];
         delete this.tasks[id];
     }
 
@@ -183,9 +183,6 @@ export class TaskManager extends Service implements Tasks.ITaskManager {
 
     /**
      * Runs any tasks that are due.
-     * TODO: "task.next" will always return a future date,
-     * so tasks will always be executed a second early.
-     * Fix the way schedules work to cache future dates and set timeouts?
      * 
      * @returns {Promise<void>}
      */
@@ -208,16 +205,20 @@ export class TaskManager extends Service implements Tasks.ITaskManager {
     }
     
     /**
-     * Replaces the contents of this.taskRunTimes
+     * Adds entries to this.taskRunTimes for any tasks that are missing
      * 
      * @returns {void}
      */
     protected updateTaskRunTimes(): void {
-        this.taskRunTimes = {};
         Object.keys(this.tasks).forEach(taskId => {
             const task = this.tasks[taskId];
+            
+            // only add, never update
+            if (this.taskRunTimes[taskId]) { return; }
+
             this.taskRunTimes[taskId] = task.schedule?.next;
         });
+        console.log('TaskManager.taskRunTimes', this.taskRunTimes);
     }
 }
 

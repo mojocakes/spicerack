@@ -1,6 +1,7 @@
 import * as Types from '@spicerack/types';
 import {
     inject as inversifyInject,
+    optional as inversifyOptional,
     injectable as inversifyInjectable,
     decorate,
 } from 'inversify';
@@ -10,6 +11,8 @@ import rootContainer from './rootContainer';
 export const inject = inversifyInject as (identifier: Types.Inject.TServiceIdentifier) => ((...args: any) => any);
 // inversify decorator function that registers a class with the container
 // export const injectable = inversifyInjectable;
+
+export const optional = inversifyOptional;
 
 /**
  * Decorates a class allowing inversify to inject constuctor dependencies,

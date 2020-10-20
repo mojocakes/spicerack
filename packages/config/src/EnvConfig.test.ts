@@ -2,18 +2,14 @@ import { EnvConfig } from './EnvConfig';
 
 // -- mocks
 type T = Partial<{
-    TEST_VALUE_ONE: string,
-    TEST_VALUE_TWO: number,
+    ENV_CONFIG_TEST_VALUE_ONE: string,
+    ENV_CONFIG_TEST_VALUE_TWO: number,
     NEW_KEY: string,
+    TEST_VALUE_ONE: string,
 }>;
 
-const mockEnv = {
-    TEST_VALUE_ONE: 'HELLO_WORLD',
-    TEST_VALUE_TWO: 12345,
-}
-
 // -- testables
-const envConfig = new EnvConfig<T>({ ...process.env, ...mockEnv });
+const envConfig = new EnvConfig<T>();
 
 beforeAll(async () => {
     await envConfig.ready;
@@ -22,8 +18,8 @@ beforeAll(async () => {
 describe('config/EnvConfig', () => {
     it('loads initial values from .env file', async () => {
         const config = await envConfig.all();
-        expect(config.TEST_VALUE_ONE).toEqual('HELLO_WORLD');
-        expect(config.TEST_VALUE_TWO).toEqual(12345);
+        expect(config.ENV_CONFIG_TEST_VALUE_ONE).toEqual('HELLO_WORLD');
+        expect(config.ENV_CONFIG_TEST_VALUE_TWO).toEqual('12345');
     });
 
     describe('get()', () => {
@@ -32,8 +28,8 @@ describe('config/EnvConfig', () => {
         });
 
         it('returns the expected value', async () => {
-            expect(await envConfig.get('TEST_VALUE_ONE')).toEqual('HELLO_WORLD');
-            expect(await envConfig.get('TEST_VALUE_TWO')).toEqual(12345);
+            expect(await envConfig.get('ENV_CONFIG_TEST_VALUE_ONE')).toEqual('HELLO_WORLD');
+            expect(await envConfig.get('ENV_CONFIG_TEST_VALUE_TWO')).toEqual('12345');
         });
     });
 

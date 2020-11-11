@@ -1,4 +1,7 @@
-import inversify from 'inversify';
+import inversify, {
+    injectable as inversifyInjectable,
+    decorate,
+} from 'inversify';
 import * as Types from '@spicerack/types';
 
 export class Container implements Types.Inject.IContainer {
@@ -17,15 +20,15 @@ export class Container implements Types.Inject.IContainer {
     }
     
     /**
-     * Registers a service or value with the container.
-     * 
-     * @param {Types.Inject.TServiceIdentifier} identifier
-     * @param {TInjectable} injectable
-     * @returns {void}
+     * @inheritdoc
      */
-    register(identifier: Types.Inject.TServiceIdentifier, injectable: Types.Inject.TInjectable): void {
+    register(injectable: Types.Inject.TInjectable, identifier?: Types.Inject.TServiceIdentifier): void {
+        decorate(inversifyInjectable(), injectable);
+
         // TODO: don't assume "inSingletonScope"
-        this.container.bind(identifier).to(injectable).inSingletonScope();
+        if (identifier) {
+            this.container.bind(identifier).to(injectable).inSingletonScope();
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 import * as Types from '@spicerack/types';
-import { registerInjectable } from '@spicerack/inject';
+import { container } from '@spicerack/inject';
 
 export abstract class Service implements Types.Generic.IService {
     /**
@@ -30,4 +30,4 @@ export abstract class Service implements Types.Generic.IService {
     }
 }
 
-registerInjectable(Service);
+container.register(Service);

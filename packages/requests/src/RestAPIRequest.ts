@@ -1,6 +1,6 @@
 import axiosLibrary, { AxiosInstance } from 'axios';
 import * as Types from '@spicerack/types';
-import { registerInjectable } from '@spicerack/inject';
+import { container } from '@spicerack/inject';
 import { RequestConfigException } from './exceptions';
 
 export class RestAPIRequest<
@@ -45,4 +45,4 @@ export class RestAPIRequest<
     }
 }
 
-registerInjectable(RestAPIRequest, 'services.requests.restApiRequest');
+container.register(RestAPIRequest, 'services.requests.restApiRequest');

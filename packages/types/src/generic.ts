@@ -1,10 +1,20 @@
-import { Inject } from './inject';
-
 // "make" method is supposed to be static but it doesn't work
 export namespace Generic {
-    export interface IFactory<T> {
-        new(...args: any[]): any;
-        make<A extends []>(...args: A): T;
+    export interface IFactory<T extends Object> {
+        /**
+         * Makes a new instance of the class.
+         * 
+         * @returns {T}
+         */
+        make(): T;
+
+        /**
+         * Overwrites properties of the returned class.
+         * 
+         * @param {Object?} data 
+         * @returns {IFactory<T>}
+         */
+        set(data?: Object): IFactory<T>;
     }
 
     export interface IService {
@@ -16,16 +26,7 @@ export namespace Generic {
         readonly ready: Promise<any>;
     }
 
-    export interface IStaticallyRegistersDependencies<T> {
-        new(...args: any[]): T
-    
-        /**
-         * Register any dependencies with the container before the
-         * application is booted.
-         * 
-         * @param {IDependencyContainer} container
-         * @returns {Promise<void>}
-         */
-        registerDependencies(container: Inject.IContainer): Promise<void>;
+    export interface INewable<TInstance, TArgs extends Array<any> = any[]> {
+        new(...args: TArgs): TInstance
     }
 }

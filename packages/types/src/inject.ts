@@ -12,11 +12,11 @@ export namespace Inject {
         /**
          * Registers a service or value with the container.
          * 
-         * @param {TServiceIdentifier} identifier
          * @param {TInjectable} injectable
+         * @param {TServiceIdentifier=} identifier
          * @returns {void}
          */
-        register(identifier: TServiceIdentifier, injectable: TInjectable): void;
+        register(injectable: TInjectable, identifier: TServiceIdentifier): void;
 
         /**
          * Resolves a service's dependencies from the container.
@@ -28,11 +28,12 @@ export namespace Inject {
     }
 
     // Types that can be registered with the container.
-    export type TInjectable =
-        | {
-            new(...args: any[]): any;
-        }
-    ;
+    // export type TInjectable =
+    //     | {
+    //         new(...args: any[]): any;
+    //     }
+    // ;
+    export type TInjectable = any; // allows for abstract classes
 
     // Available service identifiers.
     export type TServiceIdentifier = string | symbol;

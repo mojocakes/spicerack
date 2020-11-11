@@ -2,10 +2,9 @@ import * as Types from '@spicerack/types';
 import {
     inject as inversifyInject,
     optional as inversifyOptional,
-    injectable as inversifyInjectable,
-    decorate,
+    // injectable as inversifyInjectable,
+    // decorate,
 } from 'inversify';
-import rootContainer from './rootContainer';
 
 // inversify decorator function that injects a service into a class constructor argument
 export const inject = inversifyInject as (identifier: Types.Inject.TServiceIdentifier) => ((...args: any) => any);
@@ -23,9 +22,5 @@ export const optional = inversifyOptional;
  * @returns {void}
  */
 export const registerInjectable = (constructor: any, identifier?: Types.Inject.TServiceIdentifier): void => {
-    decorate(inversifyInjectable(), constructor);
-
-    if (identifier) {
-        rootContainer.register(identifier, constructor);
-    }
+    throw new Error('registerInjectable is deprecated');
 }

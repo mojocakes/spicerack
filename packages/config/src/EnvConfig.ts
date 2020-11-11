@@ -4,7 +4,7 @@ require('dotenv').config();
 import { Config } from '@spicerack/types';
 // # core
 import { Service } from '@spicerack/core';
-import { registerInjectable } from '@spicerack/inject';
+import { container } from '@spicerack/inject';
 
 /**
  * Loads config values from a .env file
@@ -48,4 +48,4 @@ export class EnvConfig<T = Config.TConfig> extends Service implements Config.ICo
     }
 }
 
-registerInjectable(EnvConfig);
+container.register(EnvConfig);

@@ -6,49 +6,47 @@ The intention of Spicerack is to share a similar architecture for backend apps t
 
 
 Go to the [documentation.](docs/index.md)
-## Quick start
+## Quick Example
 
-1. Create a new App class, injecting any services you need from the container.
+index.ts
 ```ts
-import { App, inject } from '@spicerack/core';
-import { IDependencyContainer, IConfig } from '@spicerack/types';
+import { boot } from '@spicerack/core';
+import { MyApp } from './MyApp';
 import { Config } from './services';
 
+boot(MyApp, container => {
+    // register stuff with the container that can be injected into your classes
+    container.register(Config, 'services.config');
+});
+```
+
+MyApp.ts
+```ts
+import { App } from '@spicerack/core';
+import { inject } from '@spicerack/inject';
+import { IConfig } from '@spicerack/types';
+
 export class MyApp extends App {
-    /**
-     * Registers any required services with the dependency container.
-     * 
-     * @param {IDependencyContainer} container
-     * @returns {Promise<void>}
-     */
-    public static async registerDependencies(container: IDependencyContainer): Promise<void> {
-        container.bind('services.config').to(Config).inSingletonScope();
-    }
-
-    constructor(@inject('services.config') protected config: IConfig) {
-        //
+    public constructor(@inject('services.config') protected config: IConfig) {
+        super();
+        this.ready = this.boot();
     }
 
     /**
-     * Runs automatically when the app is booted.
-     * "this.ready" promise will be resolved when this method resolves.
+     * Prepare dependencies.
      * 
      * @returns {Promise<void>}
      */
-    async boot(): Promise<void> {
+    protected async boot(): Promise<void> {
+        await this.config.ready;
         const name = this.config.get('name');
-        console.log(`My app "${name}" is running!`);
+        console.log(`${name} is running!`);
     }
 }
 ```
 
 2. Run the application.
-```ts
-import { boot } from '@spicerack/core';
-import { MyApp } from './MyApp';
 
-boot(MyApp);
-```
 
 ### Backend
 ### Frontend

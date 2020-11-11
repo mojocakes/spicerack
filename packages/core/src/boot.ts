@@ -1,4 +1,4 @@
-import { App, Generic } from '@spicerack/types';
+import { App, Generic, Inject } from '@spicerack/types';
 import { container } from '@spicerack/inject';
 
 /**
@@ -10,9 +10,21 @@ import { container } from '@spicerack/inject';
  * @param {Generic.IStaticallyRegistersDependencies<IApp>} App
  * @returns {Promise<IApp>}
  */
-export async function boot<T extends App.IApp>(App: Generic.IStaticallyRegistersDependencies<T>): Promise<T> {
+export async function boot<T extends App.IApp>(
+    App: Generic.INewable<T>,
+    /**
+     * Register any dependencies with the container before the
+     * application is booted.
+     * 
+     * @param {IDependencyContainer} container
+     * @returns {Promise<void>}
+     */
+    registerDependencies?: (container: Inject.IContainer) => Promise<void>,
+): Promise<T> {
     // Resolve any dependencies required by the app.
-    await App.registerDependencies(container);
+    if (registerDependencies) {
+        await registerDependencies(container);
+    }
 
     // Run the app.
     return container.resolve(App);

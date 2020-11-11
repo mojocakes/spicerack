@@ -1,7 +1,8 @@
 import { boot } from './boot';
 import { App } from './App';
-import { inject, registerInjectable } from '@spicerack/inject';
-import * as Types from '@spicerack/types';
+import { container, inject } from '@spicerack/inject';
+import { Inject } from '@spicerack/types';
+// import * as Types from '@spicerack/types';
 
 // -- mocks
 const mockMethodCall = jest.fn();
@@ -14,13 +15,12 @@ class MockDependency implements IMockDependency {
 
 describe('core/boot', () => {
     it('resolves app dependencies', async () => {
+        const registerDependencies = jest.fn(async (container: Inject.IContainer) => {
+            container.register(MockDependency, 'MOCK_DEPENDENCY');
+        });
+
         // create a mock app that relies on an injected dependency
         class MockApp extends App {
-            public static registerDependencies = jest.fn(async (container: Types.Inject.IContainer) => {
-                registerInjectable(MockDependency);
-                container.register('MOCK_DEPENDENCY', MockDependency);
-            });
-
             constructor(@inject('MOCK_DEPENDENCY') public service: IMockDependency) {
                 super();
 
@@ -28,10 +28,10 @@ describe('core/boot', () => {
                 this.service.send();
             }
         }
-        registerInjectable(MockApp);
+        container.register(MockApp);
 
-        await boot(MockApp);
-        expect(MockApp.registerDependencies).toHaveBeenCalled();
+        await boot(MockApp, registerDependencies);
+        expect(registerDependencies).toHaveBeenCalled();
         expect(mockMethodCall).toHaveBeenCalled();
     });
 
@@ -43,7 +43,7 @@ describe('core/boot', () => {
                 constructorCall();
             }
         }
-        registerInjectable(MockApp);
+        container.register(MockApp);
         
         await boot(MockApp);
         expect(constructorCall).toHaveBeenCalled();

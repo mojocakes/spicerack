@@ -1,7 +1,7 @@
 // # types
 import { Tasks } from '@spicerack/types';
 // #
-import { registerInjectable } from "@spicerack/inject";
+import { container } from "@spicerack/inject";
 import { Service } from '@spicerack/core';
 import { ScheduledTask } from './ScheduledTask';
 
@@ -218,8 +218,7 @@ export class TaskManager extends Service implements Tasks.ITaskManager {
 
             this.taskRunTimes[taskId] = task.schedule?.next;
         });
-        console.log('TaskManager.taskRunTimes', this.taskRunTimes);
     }
 }
 
-registerInjectable(TaskManager);
+container.register(TaskManager);

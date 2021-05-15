@@ -24,7 +24,10 @@
         "moduleResolution": "node",
         "outDir": "build/lib",
         "paths": {
-            "@/*": ["./src/*"],
+            "@/*": [
+                "./packages/*",
+                "./src/*"
+            ],
         },
         "rootDirs": [
             "src",

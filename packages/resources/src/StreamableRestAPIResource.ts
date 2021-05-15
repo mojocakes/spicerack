@@ -1,4 +1,4 @@
-import { Models, Requests, Resources, Transformers } from '@spicerack/types';
+import { Models, Requests, Resources, Transformers } from '@/types';
 import { RestAPIResource } from './RestAPIResource';
 
 export abstract class StreamableRestAPIResource<

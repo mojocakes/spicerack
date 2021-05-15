@@ -1,4 +1,4 @@
-import { Model } from './Model';
+import { Model } from './MagicModel';
 
 type IVehicle = {
     brand: string;

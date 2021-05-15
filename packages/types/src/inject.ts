@@ -1,22 +1,29 @@
+import { Generic } from "./generic";
+
 export namespace Inject {
     // The dependency injection container.
     export interface IContainer {
         /**
          * Retrieves a service or value from the container.
          * 
-         * @param {TServiceIdentifier} identifier
-         * @returns {T = any}
+         * @param {TDependencyIdentifier} identifier
+         * @returns {undefined | T}
          */
-        get<T = any>(identifier: TServiceIdentifier): T;
+        get<T extends TInjectable = any>(identifier: TDependencyIdentifier): undefined | T;
         
         /**
          * Registers a service or value with the container.
          * 
-         * @param {TInjectable} injectable
-         * @param {TServiceIdentifier=} identifier
+         * @param {TDependencyIdentifier=} identifier
+         * @param {TInjectable} value
+         * @param {TDependencyConfig=} config
          * @returns {void}
          */
-        register(injectable: TInjectable, identifier: TServiceIdentifier): void;
+        register(
+            identifier: TDependencyIdentifier,
+            value: TInjectable,
+            config?: TDependencyConfig,
+        ): void;
 
         /**
          * Resolves a service's dependencies from the container.
@@ -24,17 +31,23 @@ export namespace Inject {
          * @param {TInjectable} injectable
          * @returns {T = any}
          */
-        resolve<T = any>(injectable: TInjectable): T;
+        // resolve<T = any>(injectable: TInjectable): T;
+
+        readonly parent: null | IContainer;
+
+        clone(): IContainer;
     }
 
-    // Types that can be registered with the container.
-    // export type TInjectable =
-    //     | {
-    //         new(...args: any[]): any;
-    //     }
-    // ;
-    export type TInjectable = any; // allows for abstract classes
+    export type TInjectable = Generic.TConstructor<any>;
 
-    // Available service identifiers.
-    export type TServiceIdentifier = string | symbol;
+    export type TDependencyIdentifier = string;
+
+    export type TDependencyConfig = {
+        cache?: boolean;
+        construct?: boolean;
+    };
+
+    export type TDependency<T extends Object = any> = T | Generic.TConstructor<T>;
+
+    export type TDependencyMap = Record<TDependencyIdentifier, { value: TDependency, config: TDependencyConfig }>;
 }

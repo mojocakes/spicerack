@@ -29,4 +29,13 @@ export namespace Generic {
     export interface INewable<TInstance, TArgs extends Array<any> = any[]> {
         new(...args: TArgs): TInstance
     }
+
+    type TConstructableFunc<T> = Function & { prototype: T };
+    type TConstructableClass<T> = new (...args: any[]) => T;
+
+    export type TConstructor<
+        TReturnClass,
+        TConstructorArgs extends Array<any> = any[],
+        TStatic = any,
+    > = (TConstructableFunc<TReturnClass> | TConstructableClass<TReturnClass>) & TStatic;
 }

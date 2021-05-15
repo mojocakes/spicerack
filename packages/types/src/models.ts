@@ -1,41 +1,5 @@
 export namespace Models {
-    export interface IModel<T extends Object> {
-        /**
-         * Model data.
-         * 
-         * @var {T}
-         */
-        readonly data: T;
-
-        /**
-         * Updates a single value.
-         * 
-         * @param {keyof T} key
-         * @param {T[keyof T]} value 
-         * @returns {void}
-         */
-        set(key: keyof T, value: T[keyof T]): void;
-    
-        /**
-         * Saves any changes to this model.
-         */
-        save(): Promise<void>;
-    
-        /**
-         * Gets the model data as an object.
-         * 
-         * @returns {T}
-         */
-        serialize(): T;
-    }
-
     export type TModel<T> = IModel<T> & T;
-    
-    export interface IModelCollection<T extends IModel<any>> {
-        each(callback: (model: T) => any): void;
-    
-        filter(criteria: object): IModelCollection<T>;
-    }
 
     export type TDefaultModelProperties = {
         id?: number | string;
@@ -47,4 +11,39 @@ export namespace Models {
         | string
         | number
     ;
+    export interface IModel<T extends TDefaultModelProperties> {
+        /**
+         * Model data.
+         * 
+         * @var {T}
+         */
+        // readonly data: T;
+
+        /**
+         * Updates a one or more values.
+         * 
+         * @param {Partial<T>} values
+         * @returns {IModel<T>}
+         */
+        set(values: Partial<T>): IModel<T>;
+    
+        /**
+         * Persists any changes to the configured storage method.
+         */
+        save(): Promise<void>;
+    
+        /**
+         * Gets the model data as an object.
+         * Note! It should be possible to reconstruct the model from the data returned.
+         * 
+         * @returns {T}
+         */
+        serialize(): T;
+    }
+
+    export interface IModelCollection<T extends IModel<any>> {
+        each(callback: (model: T) => any): void;
+        
+        filter(criteria: object): IModelCollection<T>;
+    }
 }

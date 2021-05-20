@@ -1,4 +1,4 @@
-import { Tasks } from '@spicerack/types';
+import { Tasks } from '@/types';
 import { Task } from './Task';
 
 export abstract class ScheduledTask extends Task implements Tasks.IScheduledTask {

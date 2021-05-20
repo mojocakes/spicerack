@@ -1,3 +1,4 @@
+import path from 'path';
 import { EnvConfig } from './EnvConfig';
 
 // -- mocks
@@ -9,7 +10,7 @@ type T = Partial<{
 }>;
 
 // -- testables
-const envConfig = new EnvConfig<T>();
+const envConfig = new EnvConfig<T>(path.resolve(__dirname, '../.env.test'));
 
 beforeAll(async () => {
     await envConfig.ready;

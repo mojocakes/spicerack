@@ -12,12 +12,14 @@ export namespace Models {
         | number
     ;
     export interface IModel<T extends TDefaultModelProperties> {
+        id: TDefaultModelProperties['id'];
+
         /**
-         * Model data.
+         * Persists any changes to the configured storage method.
          * 
-         * @var {T}
+         * @returns {Promise<void>}
          */
-        // readonly data: T;
+        save(): Promise<void>;
 
         /**
          * Updates a one or more values.
@@ -28,17 +30,16 @@ export namespace Models {
         set(values: Partial<T>): IModel<T>;
     
         /**
-         * Persists any changes to the configured storage method.
-         */
-        save(): Promise<void>;
-    
-        /**
          * Gets the model data as an object.
          * Note! It should be possible to reconstruct the model from the data returned.
          * 
          * @returns {T}
          */
         serialize(): T;
+
+        /**
+         * (Write your own getters to access individual properties)
+         */
     }
 
     export interface IModelCollection<T extends IModel<any>> {

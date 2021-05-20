@@ -1,4 +1,4 @@
-import { Model } from './MagicModel';
+import { MagicModel } from './MagicModel';
 
 type IVehicle = {
     brand: string;
@@ -9,7 +9,7 @@ type IVehicle = {
         opens: boolean;
     };
 }
-class Car extends Model<IVehicle> implements IVehicle {
+class Car extends MagicModel<IVehicle> implements IVehicle {
     brand = '';
     color = '';
     reg = '';
@@ -60,7 +60,7 @@ describe('data/Model', () => {
     describe('set()', () => {
         it('Stores provided data', () => {
             const model = new Car(camper);
-            model.set('color', 'purple');
+            model.set({ color: 'purple' });
             expect(model.color).toBe('purple');
         });
     });

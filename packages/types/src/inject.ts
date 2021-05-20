@@ -40,7 +40,7 @@ export namespace Inject {
 
     export type TInjectable = Generic.TConstructor<any>;
 
-    export type TDependencyIdentifier = string;
+    export type TDependencyIdentifier = string | number;
 
     export type TDependencyConfig = {
         cache?: boolean;

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Tasks } from '@spicerack/types';
+import { Tasks } from '@/types';
 import { TaskManager } from './TaskManager';
 import { Task } from './Task';
 import { ScheduledTask } from './ScheduledTask';
@@ -7,10 +7,13 @@ import { TaskSchedule } from './TaskSchedule';
 
 // -- mocks
 class MockTask extends Task {
+    ready = Promise.resolve();
     handle = jest.fn(() => Promise.resolve());
     run = (jest.fn(() => Promise.resolve()) as any);
 }
 class MockScheduledTask extends ScheduledTask {
+    ready = Promise.resolve();
+
     constructor(id?: string) {
         super();
         (this.id as any) = id || this.id;
@@ -31,6 +34,8 @@ interface ITaskManagerWithTestableMethods extends Tasks.ITaskManager {
 }
 const taskManagerFactory = (): ITaskManagerWithTestableMethods => {
     class TestableTaskManager extends TaskManager {
+        ready = Promise.resolve();
+
         /**
          * Override this method and avoid calling "this.start"
          * We don't want the interval to run while we're testing.

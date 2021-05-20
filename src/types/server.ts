@@ -11,7 +11,7 @@ export interface IResponse {
 }
 
 export interface IServer {
-    listen(config?: IServerConfig): IServer;
+    listen(config?: IServerConfig): Promise<IServer>;
 
     get(route: string, controller: IRouteControllerConstructor): void;
     on(route: string, controller: IRouteControllerConstructor): void;

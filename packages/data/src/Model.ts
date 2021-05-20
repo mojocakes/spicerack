@@ -12,6 +12,10 @@ export abstract class Model<T extends Models.TDefaultModelProperties> implements
         //
     }
 
+    public get id(): undefined | number | string {
+        return this.data.id;
+    }
+
     /**
      * Updates a one or more values.
      * 

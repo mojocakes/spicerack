@@ -7,12 +7,12 @@ export type IModelConstructor<D, M = Models.IModel<any>> = {
 /**
  * A simple model that holds some data.
  */
-export abstract class MagicModel<T extends Record<string, any>> implements Models.IModel<T> {
+export abstract class MagicModel<T extends Models.TDefaultModelProperties> implements Models.IModel<T> {
     protected _proxy: any;
 
     public fillable: string[] = [];
 
-    constructor(public readonly data: T) {
+    constructor(protected data: T) {
         // Use a proxy to handle requests for any properties
         return new Proxy(this, this.proxyHandler);
     }
@@ -22,10 +22,14 @@ export abstract class MagicModel<T extends Record<string, any>> implements Model
      * 
      * @param {keyof T} key
      * @param {T[keyof T]} value 
-     * @returns {void}
+     * @returns {Models.IModel<T>}
      */
-    public set(key: keyof T, value: T[keyof T]): void {
-        this.data[key] = value;
+    public set(values: Partial<T>): Models.IModel<T> {
+        this.data = {
+            ...this.data,
+            ...values,
+        };
+        return this;
     }
 
     /**
@@ -44,19 +48,23 @@ export abstract class MagicModel<T extends Record<string, any>> implements Model
         return this.data;
     }
 
+    public get id(): undefined | number | string {
+        return this.data.id;
+    }
+
     /**
      * Makes a proxy handler for this class.
      * This allows us to override the default behaviour whenever
      * a property on this class is accessed or updated.
      * 
-     * @returns {ProxyHandler<Model<T>>}
+     * @returns {ProxyHandler<MagicModel<T>>}
      */
-    protected get proxyHandler(): ProxyHandler<Model<T>> {
+    protected get proxyHandler(): ProxyHandler<MagicModel<T>> {
         return {
-            get(receiver: Model<T>, name: string | number) {
-                return receiver[name] || receiver.data[name];
+            get(receiver: MagicModel<T>, name: string | symbol) {
+                return receiver[name] || receiver.data[name.toString()];
             },
-            set(target: Model<T>, property: string, value: any): boolean {
+            set(target: MagicModel<T>, property: string, value: any): boolean {
                 if (target.fillable.includes(property)) {
                     (target.data as any)[property] = value;
                     return true;
@@ -67,22 +75,4 @@ export abstract class MagicModel<T extends Record<string, any>> implements Model
             }
         };
     }
-}
-
-/**
- * Helper function that constructors a new model for you.
- * It sets the return type as Model & Data, removing the need for you to
- * define default properties on your model.
- * 
- * It's not recommended that you use this, but it might come in handy in certain scenarios.
- * 
- * @param {D} data 
- * @param {IModelConstructor<M, D>} ModelConstructor 
- * @returns {M & D}
- */
-export function modelFactory<D, M extends Models.IModel<D> = Models.IModel<D>>(
-    data: D,
-    ModelConstructor?: IModelConstructor<D, M>
-): M & D {
-    return new (ModelConstructor || Model)(data) as M & D;
 }

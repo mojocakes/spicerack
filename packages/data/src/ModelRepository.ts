@@ -1,5 +1,4 @@
-import { Data, Models } from '@spicerack/types';
-import { registerInjectable } from '@spicerack/inject';
+import { Data, Models } from '@/types';
 
 export abstract class ModelRepository<
     /**
@@ -15,6 +14,8 @@ export abstract class ModelRepository<
      */
     C extends Record<string, any>,
 > implements Data.IRepository<T, Q> {
+    public ready = Promise.resolve();
+
     /**
      * Deletes an entity.
      * 
@@ -48,5 +49,3 @@ export abstract class ModelRepository<
      */
     public abstract save(entity: T): Promise<T>;
 }
-
-registerInjectable(ModelRepository);

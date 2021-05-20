@@ -78,7 +78,7 @@ module.exports = {
     moduleNameMapper: {
       "^.+\\.(css|less|scss)$": "babel-jest",
       "~/(.*)": "<rootDir>/$1",
-      "@/(.*)": "<rootDir>/src/$1"
+      "@/(.*)": "<rootDir>/packages/$1"
       // "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/frontend/__mock__/fileMock.ts",
       // "\\.(css|less|scss|sass)$": "identity-obj-proxywefewewf"
     },

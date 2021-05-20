@@ -1,11 +1,12 @@
 // # types
-import { Tasks } from '@spicerack/types';
+import { Tasks } from '@/types';
 // #
-import { container } from "@spicerack/inject";
-import { Service } from '@spicerack/core';
+import { Service } from '@/core';
 import { ScheduledTask } from './ScheduledTask';
 
 export class TaskManager extends Service implements Tasks.ITaskManager {
+    public ready = Promise.resolve();
+
     /**
      * A local cache of tasks.
      */
@@ -220,5 +221,3 @@ export class TaskManager extends Service implements Tasks.ITaskManager {
         });
     }
 }
-
-container.register(TaskManager);

@@ -1,10 +1,10 @@
-import { RestAPIResource } from './RestAPIResource';
-import { Models, Requests, Transformers } from '@spicerack/types';
+import { RestAPIResource, DefaultRequestTransformer } from './RestAPIResource';
+import { Models, Requests, Transformers } from '@/types';
 
 // -- Mocks
 // mock model
 type TInventor = {
-    id?: null | number;
+    id?: number;
     name: string;
 };
 
@@ -15,6 +15,7 @@ type TQuery = {
 
 class InventorModel implements Models.IModel<TInventor> {
     constructor(public data: any) {}
+    id = this.data.id;
     set = jest.fn();
     save = jest.fn();
     serialize = jest.fn();
@@ -68,15 +69,18 @@ const mockRequest__sendsNoData: Requests.IRequest = {
 
 // mock transformers
 const mockModelTransformer: Transformers.ITransformer<Requests.TApiResult<any>, InventorModel> = {
-    transform: jest.fn((data: any) => new InventorModel(data)),
-    untransform: jest.fn((model: InventorModel) => model.serialize()),
+    ready: Promise.resolve(),
+    transform: jest.fn(async (data: any) => new InventorModel(data)),
+    untransform: jest.fn(async (model: InventorModel) => model.serialize()),
 }
 
 // -- Testables
 // standard resource for basic tests
 class Resource extends RestAPIResource<InventorModel, TQuery> {
+    ready = Promise.resolve();
     request = mockRequest__isSuccessful;
     modelTransformer = mockModelTransformer;
+    requestTransformer = new DefaultRequestTransformer();
     url = 'http://localhost/api/v1';
 }
 

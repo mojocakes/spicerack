@@ -1,16 +1,18 @@
 // import deepmerge from 'deepmerge';
-import '@spicerack/requests';
-import { Data, Models, Requests, Transformers } from '@spicerack/types';
-import { container } from '@spicerack/inject';
-import { Service } from '@spicerack/core';
+import '@/requests';
+import { Data, Models, Requests, Transformers } from '@/types';
+import { Service } from '@/core';
 import { ResourceException, ResourceTransformerException } from './exceptions';
 
-type TRequestTransformerInput<Q> = {
+// TODO: Move this type to somewhere better
+export type TRequestTransformerInput<Q> = {
     query: Q,
 } & Partial<Requests.TApiRequestConfig>;
 
-class DefaultRequestTransformer implements Transformers.ITransformer<TRequestTransformerInput<any>, Requests.TApiRequestConfig> {
-    transform(config: TRequestTransformerInput<any>): Requests.TApiRequestConfig {
+export class DefaultRequestTransformer implements Transformers.ITransformer<TRequestTransformerInput<any>, Requests.TApiRequestConfig> {
+    public ready = Promise.resolve();
+
+    public async transform(config: TRequestTransformerInput<any>): Promise<Requests.TApiRequestConfig> {
         config.params = config.query;
         delete config.query;
 
@@ -33,7 +35,7 @@ class DefaultRequestTransformer implements Transformers.ITransformer<TRequestTra
         return config as Requests.TApiRequestConfig;
     }
 
-    untransform(): any {
+    public async untransform(): Promise<any> {
         throw new ResourceTransformerException('"untransform" not implemented.');
     }
 }
@@ -56,19 +58,19 @@ export abstract class RestAPIResource<
     /**
      * Service used to make API requests.
      */
-    protected request: Requests.IRequest<Requests.TApiRequestConfig, null | T> = container.get('services.requests.restApiRequest');
+    protected abstract request: Requests.IRequest<Requests.TApiRequestConfig, null | T>;
 
     /**
      * Transforms resource queries into request queries.
      * Takes an array of objects that contain the query, and any other stuff it needs.
      */
-    protected requestTransformer: Transformers.ITransformer<TRequestTransformerInput<Q>, Requests.TApiRequestConfig> = new DefaultRequestTransformer();
+    protected abstract requestTransformer: Transformers.ITransformer<TRequestTransformerInput<Q>, Requests.TApiRequestConfig>;
 
     /**
      * The URL to send requests to.
      * You can override this for each request by overriding the requestTransformer.
      */
-    protected url?: string;
+    public readonly abstract url?: string;
 
     /**
      * Deletes an entity.
@@ -77,7 +79,7 @@ export abstract class RestAPIResource<
      * @returns {Promise<void>}
      */
     public async delete(id: Models.TModelIdentifier): Promise<void> {
-        const requestConfig = this.requestTransformer.transform({
+        const requestConfig = await this.requestTransformer.transform({
             method: 'DELETE',
             query: { id },
             url: this.url,
@@ -97,7 +99,7 @@ export abstract class RestAPIResource<
      * @returns {Promise<null | T>}
      */
     public async get(id: Models.TModelIdentifier): Promise<null | T> {
-        const requestConfig = this.requestTransformer.transform({
+        const requestConfig = await this.requestTransformer.transform({
             method: 'GET',
             query: { id },
             url: this.url,
@@ -124,7 +126,7 @@ export abstract class RestAPIResource<
      * @returns {Promise<null[] | T[]}
      */
     public async query(query: Q): Promise<null[] | T[]> {
-        const config = this.requestTransformer.transform({
+        const config = await this.requestTransformer.transform({
             method: 'GET',
             query,
             url: this.url,
@@ -137,7 +139,9 @@ export abstract class RestAPIResource<
                 return [];
             }
 
-            return response.data.map((item: any) => this.modelTransformer.transform(item));
+            return Promise.all(
+                response.data.map(async (item: any) => this.modelTransformer.transform(item)),
+            );
         } catch (e) {
             throw new ResourceException('Failed to query resource', e);
         }
@@ -152,10 +156,10 @@ export abstract class RestAPIResource<
     public async save(entity: T): Promise<T> {
         const id = (entity as Models.IModel<T> & Models.TDefaultModelProperties).id || undefined;
 
-        const requestConfig = this.requestTransformer.transform({
+        const requestConfig = await this.requestTransformer.transform({
             body: entity.serialize(),
             // TODO: figure out how to type properties available on model instance
-            method: entity.data.id ? 'PUT' : 'POST',
+            method: entity.id ? 'PUT' : 'POST',
             query: { id },
             url: this.url,
         } as TRequestTransformerInput<Q>);

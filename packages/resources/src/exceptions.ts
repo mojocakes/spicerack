@@ -1,4 +1,4 @@
-import { Exception } from '@spicerack/core';
+import { Exception } from '@/core';
 
 export class ResourceException extends Exception {
     //

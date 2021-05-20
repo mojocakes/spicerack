@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Tasks } from '@spicerack/types';
+import { Tasks } from '@/types';
 
 export class TaskSchedule implements Tasks.ITaskSchedule {
     /**

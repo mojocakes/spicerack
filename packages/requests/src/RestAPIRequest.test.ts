@@ -1,4 +1,4 @@
-import * as Types from '@spicerack/types';
+import * as Types from '@/types';
 import { RestAPIRequest } from './RestAPIRequest';
 
 // -- mocks

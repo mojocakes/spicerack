@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
-import { Tasks } from '@spicerack/types';
-import { Service } from '@spicerack/core';
+import { Tasks } from '@/types';
+import { Service } from '@/core';
 
 export abstract class Task extends Service implements Tasks.ITask {
     /**

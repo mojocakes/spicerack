@@ -1,5 +1,4 @@
-import * as Types from '@spicerack/types';
-import { container } from '@spicerack/inject';
+import * as Types from '@/types';
 
 export abstract class Service implements Types.Generic.IService {
     /**
@@ -7,7 +6,7 @@ export abstract class Service implements Types.Generic.IService {
      * 
      * @var {Promise<void>}
      */
-    public ready: Promise<void> = Promise.resolve();
+    public abstract readonly ready: Promise<void>;
 
     /**
      * Run any async setup here.
@@ -29,5 +28,3 @@ export abstract class Service implements Types.Generic.IService {
         await Promise.all(services.map(s => s.ready));
     }
 }
-
-container.register(Service);

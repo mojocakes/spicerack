@@ -1,16 +1,23 @@
 // # vendor
-require('dotenv').config();
-// # types
-import { Config } from '@spicerack/types';
-// # core
-import { Service } from '@spicerack/core';
-import { container } from '@spicerack/inject';
+const dotenv = require('dotenv');
+// # framework
+import { Config } from '@/types';
+import { Service } from '@/core';
 
 /**
  * Loads config values from a .env file
  */
 export class EnvConfig<T = Config.TConfig> extends Service implements Config.IConfig<T> {
-    private config: T = (process.env as any);
+    public ready = Promise.resolve();
+
+    private config: T;
+
+    public constructor(path?: string) {
+        super();
+
+        dotenv.config({ path });
+        this.config = (process.env as any);
+    }
 
     /**
      * Retrieves all config values.
@@ -47,5 +54,3 @@ export class EnvConfig<T = Config.TConfig> extends Service implements Config.ICo
         this.config[key] = value;
     }
 }
-
-container.register(EnvConfig);

@@ -1,21 +1,21 @@
 import { IServer, IRouteControllerConstructor, IRequest, IResponse, IRouteController } from "./types";
 import express, { Application } from "express";
-import { inject, injectable } from '../packages/core/src/container';
-import { Config } from "./Config";
+import { inject, injectable } from '@/botox';
+import { EnvConfig } from "@/config";
 
 @injectable()
 export class ExpressServer implements IServer {
     protected app: Application;
 
     constructor(
-        @inject('config') protected config: Config<any>,
+        @inject('config') protected config: EnvConfig<any>,
     ) {
         this.app = express();
     }
 
-    public listen(): IServer {
-        const port = this.config.get('PORT', 8080);
-        const hostname = this.config.get('HOST', 'localhost');
+    public async listen(): Promise<IServer> {
+        const port = await this.config.get('PORT', 8080);
+        const hostname = await this.config.get('HOST', 'localhost');
 
         this.app.listen(port, hostname, () => {
             console.info(`Server is running: http://${hostname}:${port}`);

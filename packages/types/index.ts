@@ -9,4 +9,4 @@ export * from './src/resources';
 export * from './src/root';
 export * from './src/tasks';
 export * from './src/transformers';
-export * from './src/utilities';
+export * from './src/utils';

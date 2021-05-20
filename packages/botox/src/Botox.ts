@@ -1,16 +1,3 @@
-/*
-// register a singleton
-container.register('IDENTIFIER', MyConstructor);
-// register a constructor
-container.register('IDENTIFIER', MyConstructor, { construct: false });
-// register multiple
-container.registerAll({
-    'IDENTIFIER': MyConstructor,
-    'IDENTIFIER_TWO': MyConstructorTwo,
-});
-// 
-*/
-
 import { Generic, Inject } from '@/types';
 
 /**
@@ -85,7 +72,6 @@ class Container implements Inject.IContainer {
 }
 
 export const container = new Container();
-container.register('A', class { name: 'Service A (INJECTED)' });
 
 function prepareInjectable(injectable: Generic.TConstructor<any>): void {
     injectable[INJECTABLES_PROPERTY] = injectable[INJECTABLES_PROPERTY] || [];
@@ -151,7 +137,10 @@ export function inject(identifier: Inject.TDependencyIdentifier, config: Inject.
     }
 }
 
-export function make<T extends Object = any>(constructor: Generic.TConstructor<T>): T {
-    const augmented = injectable()(constructor);
-    return augmented();
+export function make<T extends Object = any>(constructor: Generic.TConstructor<T>, ...args: any[]): T {
+    if (!constructor[INJECTABLES_PROPERTY]) {
+        throw new Error('constructor passed to "make" must be decorated with @injectable()');
+    }
+
+    return constructor(...args);
 }

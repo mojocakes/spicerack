@@ -1,9 +1,10 @@
-import * as Types from '@spicerack/types';
+import * as Types from '@/types';
+import { DefaultRequestTransformer } from './RestAPIResource';
 import { StreamableRestAPIResource } from './StreamableRestAPIResource';
 
 // -- Mocks
 type TVehicle = {
-    id?: null | number;
+    id?: number;
     brand: string;
     model: string;
 }
@@ -20,17 +21,24 @@ class VehicleModel implements Types.Models.IModel<TVehicle> {
     save = jest.fn();
     serialize = jest.fn(() => this.data);
     set = jest.fn();
+    get id() {
+        return this.data.id;
+    }
 }
 
 const mockModelTransformer: Types.Transformers.ITransformer<any, VehicleModel> = {
-    transform: (data: TVehicle) => {
+    ready: Promise.resolve(),
+
+    transform: async (data: TVehicle) => {
         return new VehicleModel(data);
     },
-    untransform: (model: VehicleModel) => model.serialize(),
+    untransform: async (model: VehicleModel) => model.serialize(),
 };
 
 const mockPaginatedQueryTransformer: Types.Transformers.ITransformer<TQuery, TQuery> = {
-    transform: jest.fn((query: TQuery): TQuery => {
+    ready: Promise.resolve(),
+
+    transform: jest.fn(async (query: TQuery): Promise<TQuery> => {
         // defaults
         const defaults = {
             page: 0,
@@ -46,7 +54,7 @@ const mockPaginatedQueryTransformer: Types.Transformers.ITransformer<TQuery, TQu
         };
     }),
 
-    untransform(query: TQuery): TQuery {
+    async untransform(query: TQuery): Promise<TQuery> {
         // defaults
         const defaults = {
             page: 1,
@@ -98,9 +106,11 @@ const mockRequest: Types.Requests.IRequest = {
 
 // -- Testables
 class Resource extends StreamableRestAPIResource<VehicleModel, TQuery> {
+    ready = Promise.resolve();
     modelTransformer = mockModelTransformer;
     paginatedQueryTransformer = mockPaginatedQueryTransformer;
     request = mockRequest;
+    requestTransformer = new DefaultRequestTransformer();
     url = 'http://localhost/api/v1/vehicles';
 }
 

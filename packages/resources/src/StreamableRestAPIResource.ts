@@ -37,8 +37,8 @@ export abstract class StreamableRestAPIResource<
         const self = this;
         const queries: Q[] = [
             // This ensures the query defaults are set to request the initial page of data
-            self.paginatedQueryTransformer.untransform(
-                self.paginatedQueryTransformer.transform(query)
+            await self.paginatedQueryTransformer.untransform(
+                await self.paginatedQueryTransformer.transform(query),
             ),
         ];
         // helper fn that returns the last item in an array
@@ -54,7 +54,7 @@ export abstract class StreamableRestAPIResource<
                     const items = await self.query(getLastItem(queries));
 
                     // Prepare the next query
-                    queries.push(self.paginatedQueryTransformer.transform(getLastItem(queries)));
+                    queries.push(await self.paginatedQueryTransformer.transform(getLastItem(queries)));
 
                     // Stop the loop if no items were returned
                     if (!items || !items.length) {

@@ -1,5 +1,5 @@
 import { Service } from '../packages/core/src/Service';
-import { injectable, inject } from "../packages/core/src/container";
+import { injectable, inject } from "@/botox";
 import { IServer } from "./types";
 import { RouteController } from "./RouteController";
 

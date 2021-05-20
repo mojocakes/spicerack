@@ -1,6 +1,5 @@
 import axiosLibrary, { AxiosInstance } from 'axios';
-import * as Types from '@spicerack/types';
-import { container } from '@spicerack/inject';
+import * as Types from '@/types';
 import { RequestConfigException } from './exceptions';
 
 export class RestAPIRequest<
@@ -44,5 +43,3 @@ export class RestAPIRequest<
         };
     }
 }
-
-container.register(RestAPIRequest, 'services.requests.restApiRequest');

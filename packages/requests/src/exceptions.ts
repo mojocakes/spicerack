@@ -1,4 +1,4 @@
-import { Exception } from '@spicerack/core';
+import { Exception } from '@/core';
 
 /**
  * Thrown when a request has been incorrectly configured.

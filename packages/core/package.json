@@ -28,7 +28,6 @@
     "url": "https://github.com/mojocakes/spicerack/issues"
   },
   "dependencies": {
-    "@spicerack/types": "*",
-    "@spicerack/inject": "*"
+    "@spicerack/types": "*"
   }
 }

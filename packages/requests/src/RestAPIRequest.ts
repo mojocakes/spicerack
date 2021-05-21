@@ -1,5 +1,6 @@
 import axiosLibrary, { AxiosInstance } from 'axios';
 import * as Types from '@/types';
+import { Service } from '@/core';
 import { RequestConfigException } from './exceptions';
 
 export class RestAPIRequest<
@@ -12,7 +13,9 @@ export class RestAPIRequest<
      * The returned data.
      */
     D = any,
-> implements Types.Requests.IRequest<C, any> {
+> extends Service implements Types.Requests.IRequest<C, any> {
+    public ready = Promise.resolve();
+
     /**
      * The axios library we're using to make the actual requests.
      * 

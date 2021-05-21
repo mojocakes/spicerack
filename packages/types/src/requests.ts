@@ -1,4 +1,5 @@
 import { Models } from './models';
+import { Generic } from './generic';
 
 export namespace Requests {
     export interface IRequest<
@@ -11,7 +12,7 @@ export namespace Requests {
          * The returned data.
          */
         D = any,
-    > {
+    > extends Generic.IService {
         /**
          * Makes a request.
          * 

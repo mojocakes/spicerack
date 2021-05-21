@@ -77,36 +77,44 @@ function prepareInjectable(injectable: Generic.TConstructor<any>): void {
     injectable[INJECTABLES_PROPERTY] = injectable[INJECTABLES_PROPERTY] || [];
 }
 
+function augmentClass<T>(constructor: Generic.TConstructor<T>): Generic.TConstructor<T> {
+    class BotoxInjectable extends constructor {
+        constructor(...args: any[]) {
+            const maxArgs = Math.max(args.length, constructor[INJECTABLES_PROPERTY].length);
+            let lastArgIndex = -1;
+            const augmentedArgs = new Array(maxArgs)
+                .fill(null)
+                .map((val, index) => {
+                    lastArgIndex++;
+                    if (lastArgIndex !== index) {
+                        throw new Error(`Optional constructor arguments cannot come before required ones in ${constructor.name}`);
+                    }
+
+                    const injectable = constructor[INJECTABLES_PROPERTY][index];
+
+                    const values = [args[index], container.get(injectable.identifier)];
+                    const value = values[0] || values[1];
+
+                    if (!value) {
+                        throw new Error(`Could not resolve "${injectable.identifier}" at argument #${index} in ${constructor.name}`);
+                    }
+
+                    return value;
+                });
+
+            super(...augmentedArgs);
+        }
+    }
+
+    Object.defineProperty(BotoxInjectable, 'name', { value: constructor.name });
+
+    return BotoxInjectable;
+}
+
 export function injectable() {
     return function InjectableFactory(target: any): any {
         prepareInjectable(target);
-
-        class BotoxInjectable extends target {
-            constructor(...args: any[]) {
-                const maxArgs = Math.max(args.length, target[INJECTABLES_PROPERTY].length);
-                const augmentedArgs = new Array(maxArgs)
-                    .fill(null)
-                    .map((val, index) => {
-                        const injectable = target[INJECTABLES_PROPERTY][index];
-
-                        const values = [args[index], container.get(injectable.identifier)];
-                        const value = values[0] || values[1];
-
-                        if (!value) {
-                            throw new Error(`Could not resolve argument #${index} in ${target.name} (${injectable})`);
-                        }
-
-                        return value;
-                    });
-
-                super(...augmentedArgs);
-            }
-        }
-        Object.defineProperty(BotoxInjectable, 'name', { value: target.name });
-
-        return BotoxInjectable;
-
-        // return target;
+        return augmentClass(target);
     };
 }
 
@@ -137,10 +145,11 @@ export function inject(identifier: Inject.TDependencyIdentifier, config: Inject.
     }
 }
 
-export function make<T extends Object = any>(constructor: Generic.TConstructor<T>, ...args: any[]): T {
+export function make<T extends Generic.TConstructor<any> = Generic.TConstructor<any>>(constructor: Generic.TConstructor<T>, ...args: any[]): T {
     if (!constructor[INJECTABLES_PROPERTY]) {
-        throw new Error('constructor passed to "make" must be decorated with @injectable()');
+        throw new Error('constructor passed to "make" must be decorated with @injectable() or @inject()');
     }
 
-    return constructor(...args);
+    const augmented = augmentClass(constructor);
+    return new augmented(...args);
 }

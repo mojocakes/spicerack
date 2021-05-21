@@ -3,7 +3,7 @@ import {
     container,
     inject,
     injectable,
-    // make,
+    make,
 } from './Botox';
 
 type TService = {
@@ -62,33 +62,72 @@ describe('Botox', () => {
             const example = new Service2();
             expect(example.service1).toEqual(Service1);
         });
-    });
 
-    describe('make', () => {
-        it('should resolve dependencies and return a class instance', () => {
+        it('should resolve nested dependencies', () => {
             @injectable()
             class Dependency1 {}
-
+    
             @injectable()
             class Dependency2 {
                 constructor(
                     @inject('1') public dependency1?: Generic.TConstructor<Dependency1>,
                 ) {}
             }
-
+    
             @injectable()
             class Service {
                 constructor(
                     @inject('2') public dependency2?: Dependency2,
                 ) {}
             }
-
+    
             container.register('1', Dependency1);
             container.register('2', Dependency2);
-
+    
             const service = new Service();
             expect(service.dependency2).toBeInstanceOf(Dependency2);
             expect(service.dependency2?.dependency1).toBeInstanceOf(Dependency1);
+        });
+    });
+
+    describe('make', () => {
+        it('should construct a class by injecting arguments', () => {
+            @injectable()
+            class DatabaseService {
+                constructor(
+                    @inject('Services/Config') public config: ConfigService,
+                ) {}
+            }
+
+            @injectable()
+            class ConfigService {
+                constructor() {
+
+                }
+            }
+
+            // @injectable()
+            class Report {
+                constructor(
+                      @inject('Services/DB') public db: DatabaseService,
+                      @inject('Services/Config') public config: ConfigService,
+                ) {}
+            }
+
+            container.register('Services/Config', ConfigService);
+            container.register('Services/DB', DatabaseService);
+            container.register('Report', Report);
+
+            class Demo {
+                constructor(
+                    public report = make<Report>(Report),
+                ) {}
+            }
+
+            const demo = new Demo();
+            expect(demo.report).toBeInstanceOf(Report);
+            expect(demo.report.config).toBeInstanceOf(ConfigService);
+            expect(demo.report.db).toBeInstanceOf(DatabaseService);
         });
     });
 });

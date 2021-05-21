@@ -21,6 +21,11 @@ export abstract class StreamableRestAPIResource<
      */
     protected abstract paginatedQueryTransformer: Transformers.ITransformer<Q, Q>;
 
+    public constructor() {
+        super();
+        this.stream = this.stream.bind(this);
+    }
+
     /**
      * Streams all entities found for the given query.
      * 
@@ -34,6 +39,7 @@ export abstract class StreamableRestAPIResource<
      * }
      */
     public async *stream(query: Q): AsyncIterableIterator<T> {
+        await this.ready;
         const self = this;
         const queries: Q[] = [
             // This ensures the query defaults are set to request the initial page of data

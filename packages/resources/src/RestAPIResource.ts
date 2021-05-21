@@ -9,7 +9,7 @@ export type TRequestTransformerInput<Q> = {
     query: Q,
 } & Partial<Requests.TApiRequestConfig>;
 
-export class DefaultRequestTransformer implements Transformers.ITransformer<TRequestTransformerInput<any>, Requests.TApiRequestConfig> {
+export class DefaultRequestTransformer extends Service implements Transformers.ITransformer<TRequestTransformerInput<any>, Requests.TApiRequestConfig> {
     public ready = Promise.resolve();
 
     public async transform(config: TRequestTransformerInput<any>): Promise<Requests.TApiRequestConfig> {

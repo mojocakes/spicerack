@@ -21,11 +21,6 @@ export abstract class StreamableRestAPIResource<
      */
     protected abstract paginatedQueryTransformer: Transformers.ITransformer<Q, Q>;
 
-    public constructor() {
-        super();
-        this.stream = this.stream.bind(this);
-    }
-
     /**
      * Streams all entities found for the given query.
      * 
@@ -52,9 +47,9 @@ export abstract class StreamableRestAPIResource<
 
         // yields an array of pages
         async function *yieldPages(): AsyncIterable<T[]> {
-            let hasNextPage: boolean = true;
+            let shouldContinue = true;
 
-            while (hasNextPage) {
+            while (shouldContinue) {
                 try {
                     // Make the request
                     const items = await self.query(getLastItem(queries));
@@ -62,14 +57,12 @@ export abstract class StreamableRestAPIResource<
                     // Prepare the next query
                     queries.push(await self.paginatedQueryTransformer.transform(getLastItem(queries)));
 
-                    // Stop the loop if no items were returned
-                    if (!items || !items.length) {
-                        hasNextPage = false;
-                    }
+                    // Stop the loop if we're done
+                    shouldContinue =  await self.shouldMakeNextQuery(query, getLastItem(queries), getLastItem(queries), items);
 
                     yield items as T[];
                 } catch {
-                    hasNextPage = false;
+                    shouldContinue = false;
                 }
             }
         }
@@ -78,5 +71,24 @@ export abstract class StreamableRestAPIResource<
         for await (let results of yieldPages()) {
             yield* results;
         }
+    }
+
+    /**
+     * Determines whether the next set of data should be requested.
+     * If false is returned, no more requests will be made.
+     *
+     * @param {Q} originalQuery
+     * @param {Q} previousQuery
+     * @param {Q} nextQuery
+     * @param {null[] | T[]} previousData
+     * @returns
+     */
+    protected async shouldMakeNextQuery(
+        originalQuery: Q,
+        previousQuery: Q,
+        nextQuery: Q,
+        previousData: null[] | T[],
+    ): Promise<boolean> {
+        return !!previousData.length;
     }
 }

@@ -87,6 +87,7 @@ const vehicles: TVehicle[] = [
 ];
 
 const mockRequest: Types.Requests.IRequest = {
+    ready: Promise.resolve(),
     send: jest.fn(async (config: Types.Requests.TApiRequestConfig): Promise<Types.Requests.TRequestResponse<any>> => {
         const defaults = {
             page: 1,

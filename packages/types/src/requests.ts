@@ -21,6 +21,15 @@ export namespace Requests {
          */
         send<DO = D>(config: C): Promise<TRequestResponse<DO, C>>;
     }
+
+    export interface IThrottle extends Generic.IService {
+        wait: Promise<void>;
+    }
+
+    export type IThrottleConfig = {
+        period: number; // milliseconds
+        max: number;
+    };
     
     export type TRequestConfig = {};
     

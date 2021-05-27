@@ -1,6 +1,7 @@
 import { MagicModel } from './MagicModel';
 
 type IVehicle = {
+    id?: string | number;
     brand: string;
     color: string;
     reg: string;

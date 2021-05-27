@@ -23,6 +23,7 @@ class InventorModel implements Models.IModel<TInventor> {
 
 // mock requests
 const mockRequest__isSuccessful: Requests.IRequest = {
+    ready: Promise.resolve(),
     send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TRequestResponse> => {
         const inventors: TInventor[] = [
             {
@@ -49,9 +50,11 @@ const mockRequest__isSuccessful: Requests.IRequest = {
     }),
 }
 const mockRequest__fails: Requests.IRequest = {
+    ready: Promise.resolve(),
     send: jest.fn(() => Promise.reject('This mock request class throws an error.')),
 }
 const mockRequest__sendsNoData: Requests.IRequest = {
+    ready: Promise.resolve(),
     send: jest.fn((config: Requests.TApiRequestConfig): Promise<Requests.TRequestResponse<any>> => {
         if (config?.params?.id) {
             return Promise.resolve({

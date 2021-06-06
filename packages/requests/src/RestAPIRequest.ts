@@ -38,8 +38,6 @@ export class RestAPIRequest<
             throw new RequestConfigException('Missing "method" property. Cannot make HTTP request.', { config });
         }
 
-        console.log('Making request', config);
-
         const response = await this.axios(config);
 
         return {

@@ -81,20 +81,20 @@ const mockModelTransformer: Transformers.ITransformer<Requests.TApiResult<any>, 
 // standard resource for basic tests
 class Resource extends RestAPIResource<InventorModel, TQuery> {
     ready = Promise.resolve();
-    request = mockRequest__isSuccessful;
-    modelTransformer = mockModelTransformer;
-    requestTransformer = new DefaultRequestTransformer();
+    makeRequest = async () => mockRequest__isSuccessful;
+    makeModelTransformer = async () => mockModelTransformer;
+    makeRequestTransformer = async () => new DefaultRequestTransformer();
     url = 'http://localhost/api/v1';
 }
 
 // resource whose requests will fail
 class ResourceWithFailingRequest extends Resource {
-    request = mockRequest__fails;
+    makeRequest = async () => mockRequest__fails;
 }
 
 // resource whose requests return no data
 class ResourceWithNoData extends Resource {
-    request = mockRequest__sendsNoData;
+    makeRequest = async () => mockRequest__sendsNoData;
 }
 
 const resource = new Resource();

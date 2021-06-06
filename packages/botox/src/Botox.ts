@@ -42,7 +42,7 @@ class Container implements Inject.IContainer {
     ): void {
         this.dependencies[identifier] = {
             config,
-            value: this.prepareStoredValue(value, config),
+            value: this.prepareStoredValue(value, config, identifier),
         };
     }
 
@@ -62,12 +62,25 @@ class Container implements Inject.IContainer {
         return value;
     }
 
-    protected prepareStoredValue(value: any, config: Inject.TDependencyConfig): any {
+    protected prepareStoredValue(value: any, config: Inject.TDependencyConfig, identifier: Inject.TDependencyIdentifier): any {
         if (config.cache && config.construct) {
+            if (!this.isConstructor(value)) {
+                throw new Error(`Container error: provided value for "${identifier}" is not newable.`);
+            }
             return new value;
         }
 
         return value;
+    }
+
+    /**
+     * Determines whether a value can be constructed by calling "new"
+     *
+     * @param {any} value
+     * @return {boolean}
+     */
+    protected isConstructor(value: any): boolean {
+        return !!value.prototype && !!value.prototype.constructor.name;
     }
 }
 
@@ -92,11 +105,11 @@ function augmentClass<T>(constructor: Generic.TConstructor<T>): Generic.TConstru
 
                     const injectable = constructor[INJECTABLES_PROPERTY][index];
 
-                    const values = [args[index], container.get(injectable.identifier)];
+                    const values = [args[index], injectable && container.get(injectable.identifier)];
                     const value = values[0] || values[1];
 
                     if (!value) {
-                        throw new Error(`Could not resolve "${injectable.identifier}" at argument #${index} in ${constructor.name}`);
+                        throw new Error(`Could not resolve "${injectable?.identifier || 'unkown'}" at argument #${index} in ${constructor.name}`);
                     }
 
                     return value;
@@ -147,7 +160,7 @@ export function inject(identifier: Inject.TDependencyIdentifier, config: Inject.
 
 export function make<T extends Generic.TConstructor<any> = Generic.TConstructor<any>>(constructor: Generic.TConstructor<T>, ...args: any[]): T {
     if (!constructor[INJECTABLES_PROPERTY]) {
-        throw new Error('constructor passed to "make" must be decorated with @injectable() or @inject()');
+        prepareInjectable(constructor);
     }
 
     const augmented = augmentClass(constructor);

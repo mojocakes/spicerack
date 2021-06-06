@@ -1,4 +1,5 @@
 import * as Types from '@/types';
+import { RateLimiter } from '@/resources';
 import { DefaultRequestTransformer } from './RestAPIResource';
 import { StreamableRestAPIResource } from './StreamableRestAPIResource';
 
@@ -108,10 +109,11 @@ const mockRequest: Types.Requests.IRequest = {
 // -- Testables
 class Resource extends StreamableRestAPIResource<VehicleModel, TQuery> {
     ready = Promise.resolve();
-    modelTransformer = mockModelTransformer;
-    paginatedQueryTransformer = mockPaginatedQueryTransformer;
-    request = mockRequest;
-    requestTransformer = new DefaultRequestTransformer();
+    makeModelTransformer = async () => mockModelTransformer;
+    makePaginatedQueryTransformer = async () => mockPaginatedQueryTransformer;
+    makeRequest = async () => mockRequest;
+    makeRequestTransformer = async () => new DefaultRequestTransformer();
+    makeRateLimiter = async () => new RateLimiter({ max: Infinity, period: 0 });
     url = 'http://localhost/api/v1/vehicles';
 }
 
@@ -156,6 +158,10 @@ describe('resources/StreamableRestAPIResource', () => {
             // without requiring the consumer to implement another method.
             // Making requests until there are no more results is just a better DX 🤷‍♂️
             expect(mockRequest.send).toHaveBeenCalledTimes(4);
+        });
+
+        it('should apply a rate limiter to requests', () => {
+
         });
     });
 });

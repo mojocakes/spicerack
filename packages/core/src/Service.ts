@@ -25,6 +25,11 @@ export abstract class Service implements Types.Generic.IService {
      * @returns {Promise<void>}
      */
     protected async bootServices(...services: Types.Generic.IService[]): Promise<void> {
-        await Promise.all(services.map(s => s.ready));
+        await Promise.all(services.map(service => {
+            if (!service.ready) {
+                throw new Error(`Argument passed to bootServices is not a service (${service.constructor.name})`);
+            }
+            return service.ready
+        }));
     }
 }

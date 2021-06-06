@@ -4,7 +4,7 @@ import { RestAPIResource } from './RestAPIResource';
 export abstract class StreamableRestAPIResource<
     /**
      * The model type
-     * 
+     *
      * TODO: Fix this type to specify optional "id" property of model
      */
     T extends Models.IModel<any & Models.TDefaultModelProperties>,
@@ -19,7 +19,12 @@ export abstract class StreamableRestAPIResource<
      * The "transform" method should prepare the next page query.
      * The "untransform" method should prepare the previous page query.
      */
-    protected abstract paginatedQueryTransformer: Transformers.ITransformer<Q, Q>;
+    protected abstract makePaginatedQueryTransformer(originalQuery?: Q): Promise<Transformers.ITransformer<Q, Q>>;
+
+    /**
+     * The rate limiter that will be used to throttle requests.
+     */
+    protected abstract makeRateLimiter(): Promise<Resources.IRateLimiter>;
 
     /**
      * Streams all entities found for the given query.
@@ -36,10 +41,11 @@ export abstract class StreamableRestAPIResource<
     public async *stream(query: Q): AsyncIterableIterator<T> {
         await this.ready;
         const self = this;
+        const queryTransformer = await this.makePaginatedQueryTransformer(query);
         const queries: Q[] = [
             // This ensures the query defaults are set to request the initial page of data
-            await self.paginatedQueryTransformer.untransform(
-                await self.paginatedQueryTransformer.transform(query),
+            await queryTransformer.untransform(
+                await queryTransformer.transform(query),
             ),
         ];
         // helper fn that returns the last item in an array
@@ -52,10 +58,12 @@ export abstract class StreamableRestAPIResource<
             while (shouldContinue) {
                 try {
                     // Make the request
-                    const items = await self.query(getLastItem(queries));
+                    // const items = await self.query(getLastItem(queries));
+
+                    const items = await (await self.makeRateLimiter()).queue(() => self.query(getLastItem(queries)));
 
                     // Prepare the next query
-                    queries.push(await self.paginatedQueryTransformer.transform(getLastItem(queries)));
+                    queries.push(await queryTransformer.transform(getLastItem(queries)));
 
                     // Stop the loop if we're done
                     shouldContinue =  await self.shouldMakeNextQuery(query, getLastItem(queries), getLastItem(queries), items);

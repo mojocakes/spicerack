@@ -1,0 +1,35 @@
+{
+  "name": "@spicerack/events",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "James Cook <j.cook@i-resources.co.uk>",
+  "homepage": "https://github.com/mojocakes/spicerack#readme",
+  "license": "MIT",
+  "main": "lib/events.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://npm.landingsites.co.uk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mojocakes/spicerack.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/mojocakes/spicerack/issues"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.1"
+  }
+}

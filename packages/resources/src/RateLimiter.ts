@@ -41,7 +41,7 @@ export class RateLimiter extends Service implements Resources.IRateLimiter {
                 } else {
                     const nextOpportunity = this.nextOpportunity();
                     const timeout = nextOpportunity - (new Date().valueOf());
-                    // console.info(`Queueing callback for ${timeout / 1000} seconds`);
+                    console.info(`RateLimiter: waiting for ${timeout / 1000} seconds`);
                     await new Promise(r => setTimeout(r, timeout));
                     check();
                 }

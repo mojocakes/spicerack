@@ -58,8 +58,6 @@ export abstract class StreamableRestAPIResource<
             while (shouldContinue) {
                 try {
                     // Make the request
-                    // const items = await self.query(getLastItem(queries));
-
                     const items = await (await self.makeRateLimiter()).queue(() => self.query(getLastItem(queries)));
 
                     // Prepare the next query
@@ -69,8 +67,9 @@ export abstract class StreamableRestAPIResource<
                     shouldContinue =  await self.shouldMakeNextQuery(query, getLastItem(queries), getLastItem(queries), items);
 
                     yield items as T[];
-                } catch {
-                    shouldContinue = false;
+                } catch (error) {
+                    // decide whether to continue
+                    shouldContinue = await self.shouldMakeNextQuery(query, getLastItem(queries), getLastItem(queries), [], error);
                 }
             }
         }
@@ -89,6 +88,7 @@ export abstract class StreamableRestAPIResource<
      * @param {Q} previousQuery
      * @param {Q} nextQuery
      * @param {null[] | T[]} previousData
+     * @param {any=} error
      * @returns
      */
     protected async shouldMakeNextQuery(
@@ -96,6 +96,7 @@ export abstract class StreamableRestAPIResource<
         previousQuery: Q,
         nextQuery: Q,
         previousData: null[] | T[],
+        error?: any,
     ): Promise<boolean> {
         return !!previousData.length;
     }

@@ -143,6 +143,7 @@ export abstract class RestAPIResource<
                 response.data.map(async (item: any) => (await this.makeModelTransformer(query)).transform(item)),
             );
         } catch (e) {
+            console.log('Query error', { ...e });
             throw new ResourceException('Failed to query resource', e);
         }
     }

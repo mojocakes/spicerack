@@ -2,25 +2,25 @@ import { Generic } from "./generic";
 
 export namespace Inject {
     // The dependency injection container.
-    export interface IContainer {
+    export interface IContainer<TDepList extends Record<Inject.TDependencyIdentifier, any>> {
         /**
          * Retrieves a service or value from the container.
          * 
-         * @param {TDependencyIdentifier} identifier
+         * @param {keyof TDepList} identifier
          * @returns {undefined | T}
          */
-        get<T extends TInjectable = any>(identifier: TDependencyIdentifier): undefined | T;
+        get(identifier: keyof TDepList): TDepList[keyof TDepList];
         
         /**
          * Registers a service or value with the container.
          * 
-         * @param {TDependencyIdentifier=} identifier
+         * @param {keyof TDepList=} identifier
          * @param {TInjectable} value
          * @param {TDependencyConfig=} config
          * @returns {void}
          */
         register(
-            identifier: TDependencyIdentifier,
+            identifier: keyof TDepList,
             value: TInjectable,
             config?: TDependencyConfig,
         ): void;
@@ -33,15 +33,15 @@ export namespace Inject {
          */
         // resolve<T = any>(injectable: TInjectable): T;
 
-        readonly parent: null | IContainer;
+        readonly parent: null | IContainer<any>;
 
-        clone(): IContainer;
+        clone(): IContainer<any>;
     }
 
     export type TInjectable = Generic.TConstructor<any>;
 
     export type TInjectableConfig = {
-        container: IContainer;
+        container: IContainer<any>;
     };
 
     export type TDependencyIdentifier = string | number;
@@ -53,5 +53,5 @@ export namespace Inject {
 
     export type TDependency<T extends Object = any> = T | Generic.TConstructor<T>;
 
-    export type TDependencyMap = Record<TDependencyIdentifier, { value: TDependency, config: TDependencyConfig }>;
+    export type TDependencyMap<TIdentifiers extends TDependencyIdentifier = TDependencyIdentifier> = Record<TIdentifiers, { value: TDependency, config: TDependencyConfig }>;
 }

@@ -12,16 +12,18 @@ export const DEFAULT_DEPENDENCY_CONFIG: Inject.TDependencyConfig = {
 
 export const INJECTABLES_PROPERTY = '__injected_arguments';
 
-export class Container implements Inject.IContainer {
-    protected dependencies: Inject.TDependencyMap = {};
+export class Container<TDepList extends Record<Inject.TDependencyIdentifier, any>> implements Inject.IContainer<TDepList> {
+    protected dependencies: Inject.TDependencyMap<any> = {};
 
-    readonly parent: null | Inject.IContainer;
+    readonly parent: null | Inject.IContainer<any>;
 
-    constructor(parent?: Inject.IContainer) {
+    constructor(parent?: Inject.IContainer<any>) {
         this.parent = parent || null;
     }
 
-    get<T extends Inject.TInjectable = any>(identifier: Inject.TDependencyIdentifier): undefined | T {
+    public get(identifier: keyof TDepList)
+    // : TDepList[keyof TDepList] // TODO: Commenting this out = "any", leaving it in created a union type
+    {
         const dep = this.dependencies[identifier];
 
         if (!dep && this.parent) {
@@ -29,14 +31,14 @@ export class Container implements Inject.IContainer {
         }
 
         if (!dep) {
-            return;
+            throw new Error(`No dependency registered with key "${identifier}"`);
         }
 
         return this.prepareReturnedValue(dep.value, dep.config);
     }
 
-    register(
-        identifier: Inject.TDependencyIdentifier,
+    public register(
+        identifier: keyof TDepList,
         value: Inject.TInjectable,
         config: Inject.TDependencyConfig = DEFAULT_DEPENDENCY_CONFIG,
     ): void {
@@ -46,12 +48,12 @@ export class Container implements Inject.IContainer {
         };
     }
 
-    unregister(identifier: Inject.TDependencyIdentifier): void {
+    public unregister(identifier: keyof TDepList): void {
         delete this.dependencies[identifier];
     }
 
-    public clone(): Inject.IContainer {
-        return new Container(this);
+    public clone(): Inject.IContainer<any> {
+        return new Container<TDepList>(this);
     }
     
     protected prepareReturnedValue(value: any, config: Inject.TDependencyConfig): any {
@@ -62,11 +64,12 @@ export class Container implements Inject.IContainer {
         return value;
     }
 
-    protected prepareStoredValue(value: any, config: Inject.TDependencyConfig, identifier: Inject.TDependencyIdentifier): any {
+    protected prepareStoredValue(value: any, config: Inject.TDependencyConfig, identifier: keyof TDepList): any {
         if (config.cache && config.construct) {
             if (!this.isConstructor(value)) {
                 throw new Error(`Container error: provided value for "${identifier}" is not newable.`);
             }
+
             return new value;
         }
 

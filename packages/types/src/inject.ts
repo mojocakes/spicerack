@@ -40,6 +40,10 @@ export namespace Inject {
 
     export type TInjectable = Generic.TConstructor<any>;
 
+    export type TInjectableConfig = {
+        container: IContainer;
+    };
+
     export type TDependencyIdentifier = string | number;
 
     export type TDependencyConfig = {

@@ -1,18 +1,18 @@
 import { Generic, Inject } from '@/types';
 
 /**
-     * cache: true, construct: true = returns same instance of class every time
-     * cache: false, construct: false / cache: true, construct: false = returns class constructor
-     * cache: false, construct: true = returns new instance of class every time
-     */
- export const DEFAULT_DEPENDENCY_CONFIG: Inject.TDependencyConfig = {
+ * cache: true, construct: true = returns same instance of class every time
+ * cache: false, construct: false / cache: true, construct: false = returns class constructor
+ * cache: false, construct: true = returns new instance of class every time
+ */
+export const DEFAULT_DEPENDENCY_CONFIG: Inject.TDependencyConfig = {
     cache: true,
     construct: true,
 };
 
 export const INJECTABLES_PROPERTY = '__injected_arguments';
 
-class Container implements Inject.IContainer {
+export class Container implements Inject.IContainer {
     protected dependencies: Inject.TDependencyMap = {};
 
     readonly parent: null | Inject.IContainer;
@@ -86,11 +86,15 @@ class Container implements Inject.IContainer {
 
 export const container = new Container();
 
+export const DEFAULT_INJECTABLE_CONFIG: Inject.TInjectableConfig = {
+    container: container,
+}
+
 function prepareInjectable(injectable: Generic.TConstructor<any>): void {
     injectable[INJECTABLES_PROPERTY] = injectable[INJECTABLES_PROPERTY] || [];
 }
 
-function augmentClass<T>(constructor: Generic.TConstructor<T>): Generic.TConstructor<T> {
+function augmentClass<T>(constructor: Generic.TConstructor<T>, config: Inject.TInjectableConfig): Generic.TConstructor<T> {
     class BotoxInjectable extends constructor {
         constructor(...args: any[]) {
             const maxArgs = Math.max(args.length, constructor[INJECTABLES_PROPERTY].length);
@@ -105,7 +109,7 @@ function augmentClass<T>(constructor: Generic.TConstructor<T>): Generic.TConstru
 
                     const injectable = constructor[INJECTABLES_PROPERTY][index];
 
-                    const values = [args[index], injectable && container.get(injectable.identifier)];
+                    const values = [args[index], injectable && config.container.get(injectable.identifier)];
                     const value = values[0] || values[1];
 
                     if (!value) {
@@ -124,10 +128,10 @@ function augmentClass<T>(constructor: Generic.TConstructor<T>): Generic.TConstru
     return BotoxInjectable;
 }
 
-export function injectable() {
+export function injectable(config: Inject.TInjectableConfig = DEFAULT_INJECTABLE_CONFIG) {
     return function InjectableFactory(target: any): any {
         prepareInjectable(target);
-        return augmentClass(target);
+        return augmentClass(target, config);
     };
 }
 
@@ -163,6 +167,7 @@ export function make<T extends Generic.TConstructor<any> = Generic.TConstructor<
         prepareInjectable(constructor);
     }
 
-    const augmented = augmentClass(constructor);
+    // TODO: Cannot call make() and use a custom container
+    const augmented = augmentClass(constructor, DEFAULT_INJECTABLE_CONFIG);
     return new augmented(...args);
 }
